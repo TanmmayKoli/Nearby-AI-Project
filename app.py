@@ -6,13 +6,15 @@ Run:  streamlit run app.py
 import hmac
 import os
 import re
+import time
 from contextlib import nullcontext
+from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
 from langsmith import tracing_context
 
-from agent import config
+from agent import analytics, config
 from agent.categories import CATEGORIES
 from agent.graph import build_graph, get_state, new_thread_id, stream_turn
 from agent.history import list_conversations, load_conversation
@@ -37,7 +39,10 @@ ASSISTANT_AVATAR = "🏠"
 MORE_PROS_LIMIT = 8  # ranked matches to fetch for "See more pros" (top 3 still get the request)
 PAST_CONVERSATIONS_SHOWN = 10
 MAPS_URL = "https://www.google.com/maps/place/?q=place_id:{place_id}"
-DEMO_NOTICE = "Demo: requests are not actually sent to these businesses. Please use fake contact details."
+DEMO_NOTICE = (
+    "Demo: requests are not actually sent to these businesses. Please use fake contact details. "
+    "We record anonymous usage stats (no messages or contact info)."
+)
 # Quick replies: tappable answers under the latest question, only where the
 # answers are fixed. Clicking sends the label as the user's message.
 URGENCY_REPLIES = ["Right away", "In a day or two", "This week", "Flexible"]
@@ -321,6 +326,24 @@ def render_next_steps(s: LeadState) -> None:
                   on_click=start_new_conversation, args=(None, chosen), width="content")
 
 
+def record_analytics(turn_seconds: float) -> None:
+    """Anonymous outcome row for this conversation (agent/analytics.py). Each
+    conversation gets its own random analytics id, unrelated to the thread id.
+    Fire-and-forget: never blocks or breaks the chat."""
+    try:
+        tracked = st.session_state.setdefault("analytics", {})
+        conv = tracked.setdefault(
+            st.session_state.thread_id,
+            {"id": analytics.new_conversation_id(), "started_at": datetime.now(timezone.utc), "turn_seconds": []},
+        )
+        conv["turn_seconds"].append(turn_seconds)
+        state = get_state(graph, st.session_state.thread_id)
+        analytics.record_turn(conv["id"], state, conv["started_at"], conv["turn_seconds"],
+                              "deployed" if DEPLOYED else "local")
+    except Exception:  # analytics must never break the chat
+        pass
+
+
 def stream_reply(text: str) -> None:
     """Show the user's message and stream the reply.
 
@@ -330,6 +353,7 @@ def stream_reply(text: str) -> None:
     safety, out-of-scope) don't stream: if nothing streamed, the final message
     is read from state and shown directly.
     """
+    started = time.perf_counter()
     with st.chat_message("user"):
         st.markdown(text)
     with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
@@ -356,6 +380,7 @@ def stream_reply(text: str) -> None:
             final = get_state(graph, st.session_state.thread_id).messages[-1]
             with thinking.container():
                 st.markdown(_text(final))
+    record_analytics(time.perf_counter() - started)
     st.rerun()
 
 

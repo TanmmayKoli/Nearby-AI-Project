@@ -164,11 +164,29 @@ Moving extraction to Haiku cut end-to-end time ~8% (216s → 198s on the same sc
 
 One example of iterating on these results: `vague_opener` (a ceiling stain under a bathroom) flipped between *plumbing* and *water damage* across runs. I made the rule explicit (active leak with no standing water → plumbing, so the source gets fixed first), and it then passed 3 of 3 runs, also getting faster (32s → 23s).
 
-There are also **226 offline tests** (no API calls) covering routing, validation, merging, safety detection, matching, provider selection, the provider message, and the Streamlit UI. They include an **app startup smoke test** that loads `app.py` with no API key and the network blocked (normal and deployed-with-password), and imports every module. **GitHub Actions** runs the offline suite on every push and pull request (`.github/workflows/tests.yml`).
+There are also **246 offline tests** (no API calls) covering routing, validation, merging, safety detection, matching, provider selection, the provider message, analytics (payload allow-list, failure isolation, stats math), and the Streamlit UI. They include an **app startup smoke test** that loads `app.py` with no API key and the network blocked (normal and deployed-with-password), and imports every module. **GitHub Actions** runs the offline suite on every push and pull request (`.github/workflows/tests.yml`).
 
 ### What these tests can and can't tell you
 
 Scripted scenarios show that **specific behaviors work** and that changes don't break them. They **don't measure real conversion or lead quality**. Real users are messier than scripts, and only real providers can say whether they'd accept a lead. See *What's next* for how I'd measure both in production.
+
+---
+
+## Analytics
+
+The scenario suite can't measure real conversion, so the deployed app records **anonymous outcome data** in Supabase: one row per conversation, updated after every turn (`agent/analytics.py`).
+
+- **Logged:** a random id made just for analytics (not the chat's id), start and last-update time, source (`deployed` / `local`), number of turns, outcome (converted, declined, out of scope, no match, emergency, in progress), category, urgency, number of providers matched, and average turn time.
+- **Never logged:** message text, names, phone numbers, emails, zips, addresses, the facts the user described, IPs or any user identifier. A unit test checks the payload against this allow-list.
+- **Can't break the chat:** writes run in a background thread with a 2-second timeout; any error is logged as a warning and the conversation carries on. It's off when Supabase isn't configured, and always off in tests and CI.
+
+**Analytics is optional and off by default.** The app works the same without it. To enable it locally:
+
+1. Create your own Supabase project.
+2. Run `supabase/schema.sql` in its SQL editor (creates the `conversations` table with row-level security on).
+3. Set `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` and `ADMIN_PASSWORD` in `.env` (see `.env.example`), then run the app and open `/stats`.
+
+An admin-only **stats page** (`/stats`, behind `ADMIN_PASSWORD`, not linked from the app) shows total conversations, conversion rate (converted ÷ eligible, where eligible leaves out out-of-scope, no-match and gas-emergency conversations, plus ones still in progress), raw conversion rate, outcomes, conversations by category, average turns to conversion, average and p90 turn latency, and conversations per day, filterable by source. Conversations with no update for 30+ minutes count as abandoned.
 
 ---
 
@@ -192,6 +210,8 @@ Settings (`.env` locally, or Streamlit secrets when deployed):
 | `APP_PASSWORD` | unset | if set, a password screen comes first |
 | `DEPLOYED` | unset | `true` = public demo: no past conversations, nothing written to disk, nothing sent |
 | `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT` | off | **local only**: traces each turn to LangSmith, tagged with its thread id. Never enabled when `DEPLOYED=true`, and off for the offline tests |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` | unset | anonymous analytics (see above); off when unset. The service key is only used server-side |
+| `ADMIN_PASSWORD` | unset | password for the `/stats` page (separate from `APP_PASSWORD`); the page is off when unset |
 
 Tests:
 
@@ -220,11 +240,13 @@ agent/        state.py (schemas, merge, validation) · categories.py (category d
               safety.py (keyword safety rules) · prompts.py · nodes.py · graph.py · config.py
               dispatch.py (what a provider receives) · history.py (past conversations)
               timing.py (per-node latency) · faithfulness.py (description check)
+              analytics.py (anonymous usage stats + stats calculations)
 providers/    fetch.py · match.py · geo.py · models.py
               providers.json · overrides.json (exclusions + wildlife include-list)
 tests/        offline tests · test_app_smoke.py (startup) · test_live.py (scenario suite)
 samples/      example transcripts and leads (fake contact details only), scenario_results.md
 app.py        Streamlit chat UI
+pages/        stats.py (admin stats page, password-gated)
 .github/workflows/tests.yml   CI: offline tests on every push and PR
 ```
 
@@ -234,7 +256,7 @@ app.py        Streamlit chat UI
 
 - **Not measured on real users.** The scenario suite shows behaviors work, not real conversion rates.
 - **Leads aren't actually sent.** Dispatch (SMS, email, or a provider API) is out of scope; locally the lead is written as JSON.
-- **The deployed demo stores nothing and sends no leads.** Conversations live only in the browser session.
+- **The deployed demo stores no personal data and sends no leads.** Conversations live only in the browser session; only anonymous outcome stats are recorded (see *Analytics*).
 - **Wildlife removal has thin coverage** (one vetted provider, in Roseville; its Yolo County coverage is unconfirmed).
 - **Provider availability and pricing are unknown.** We match on category, location and reputation only.
 - **Licensing isn't verified.** Providers pass type and review filters, but CSLB license status isn't checked.
