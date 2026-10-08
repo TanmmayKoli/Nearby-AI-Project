@@ -273,3 +273,17 @@ def test_start_new_request_without_reuse_carries_nothing(app):
     at.sidebar.toggle[0].set_value(True).run()
     fields = dict(zip(at.table[0].value["field"], at.table[0].value["value"]))
     assert fields["zip"] == "-" and fields["name"] == "-"
+
+
+def test_provider_view_card_after_consent(app):
+    at = app(["Water in the basement."], extractions=[FULL], consents=["yes"])
+    at.chat_input[0].set_value("everything at once").run()
+    assert "What the provider receives" not in [e.label for e in at.expander]  # only after consent
+    next(b for b in at.button if b.label == "Yes, share my info").click().run()
+    card = next(e for e in at.expander if e.label == "What the provider receives")
+    text = " ".join(m.value for m in card.markdown)
+    assert "Within a week · Water damage restoration · 95616" in text and "Jane D." in text
+    assert "Jane Doe" not in text and "(530) 555-0123" in text
+    assert "customer consented" in " ".join(c.value for c in card.caption)
+    buttons = {b.label: b for b in card.button}
+    assert buttons["Accept"].disabled and buttons["Decline"].disabled

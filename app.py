@@ -16,7 +16,8 @@ from agent import config
 from agent.categories import CATEGORIES
 from agent.graph import build_graph, get_state, new_thread_id, stream_turn
 from agent.history import list_conversations, load_conversation
-from agent.nodes import CLOSED_STATUSES, PROVIDERS_HEADING, REPAIR_WHO, _text
+from agent.dispatch import provider_view
+from agent.nodes import CLOSED_STATUSES, PROVIDERS_HEADING, REPAIR_WHO, _text, build_lead
 from agent.state import LeadState
 from providers.match import match_providers
 
@@ -268,6 +269,24 @@ def render_quick_replies(s: LeadState) -> None:
                       on_click=send_quick_reply, args=(label,), width="content")
 
 
+def render_provider_view(s: LeadState) -> None:
+    """The lead as a provider would receive it, built from the Lead object only
+    (the same text a real dispatch step would send: agent.dispatch)."""
+    v = provider_view(build_lead(s, s.lead_id))
+    with st.expander("What the provider receives"):
+        with st.container(border=True):
+            st.markdown(f"**{v.header}**")
+            st.markdown(v.description)
+            if v.details:
+                st.markdown("  \n".join(f"{label}: {value}" for label, value in v.details))
+            st.markdown("  \n".join([f"**Customer:** {v.customer}", v.contact, *v.extras]))
+            st.caption(v.footer)
+            with st.container(horizontal=True, gap="small"):
+                st.button("Accept", key=f"pv-accept-{s.lead_id}", disabled=True, width="content")
+                st.button("Decline", key=f"pv-decline-{s.lead_id}", disabled=True, width="content")
+            st.caption("Preview only: these buttons don't do anything.")
+
+
 CARRY_FIELDS = ["zip", "name", "contact_phone", "contact_email"]
 
 
@@ -371,6 +390,8 @@ with chat_col:
             st.success(f"Lead `{state.lead_id}` created (demo: not saved or sent anywhere).")
         else:
             st.success(f"Lead created: `leads/{state.lead_id}.json`")
+    if state.status == "converted" and state.lead_id:
+        render_provider_view(state)
     if state.status in CLOSED_STATUSES and history and not viewing and not message:
         render_next_steps(state)
     if message:

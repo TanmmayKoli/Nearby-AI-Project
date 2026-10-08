@@ -551,11 +551,10 @@ def after_consent(state: LeadState) -> str:
 # --- create_lead + closed --------------------------------------------------------
 
 
-def create_lead(state: LeadState, leads_dir: Path | None, demo: bool = False) -> dict[str, Any]:
-    """Validate the Lead (schema enforces consent, contact, >=1 provider) and write it.
-    leads_dir=None (deployed demo) validates but doesn't write to disk."""
-    lead_id = uuid.uuid4().hex[:8]
-    lead = Lead(
+def build_lead(state: LeadState, lead_id: str) -> Lead:
+    """The Lead for this conversation. Validation (consent, contact, >=1 provider)
+    happens here. Also used by the app's "What the provider receives" card."""
+    return Lead(
         lead_id=lead_id,
         category=state.category,
         problem_description=state.problem_description,
@@ -574,6 +573,13 @@ def create_lead(state: LeadState, leads_dir: Path | None, demo: bool = False) ->
         matched_providers=state.matched_providers,
         consent_to_share=state.consent_to_share,
     )
+
+
+def create_lead(state: LeadState, leads_dir: Path | None, demo: bool = False) -> dict[str, Any]:
+    """Validate the Lead and write it. leads_dir=None (deployed demo) validates
+    but doesn't write to disk."""
+    lead_id = uuid.uuid4().hex[:8]
+    lead = build_lead(state, lead_id)
     if leads_dir is not None:
         leads_dir.mkdir(parents=True, exist_ok=True)
         (leads_dir / f"{lead_id}.json").write_text(json.dumps(lead.model_dump(mode="json"), indent=2))
