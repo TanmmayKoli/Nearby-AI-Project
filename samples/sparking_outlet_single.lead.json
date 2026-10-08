@@ -1,13 +1,10 @@
 {
-  "lead_id": "1c4e8d6a",
-  "created_at": "2026-10-08T08:50:22.075241Z",
+  "lead_id": "2fec4d69",
+  "created_at": "2026-10-08T21:30:42.841459Z",
   "category": "electrical",
-  "problem_description": "A kitchen outlet sparked once when the customer plugged in a toaster. The outlet isn't hot, and the rest of the kitchen works.",
+  "problem_description": "One of the customer's kitchen outlets sparked when they plugged in a toaster.",
   "facts": [
-    "One of the outlets in the kitchen sparked when the toaster was plugged in",
-    "Only that one outlet is affected; the rest of the kitchen works",
-    "It sparked only once",
-    "The outlet isn't hot"
+    "One of the outlets in the kitchen sparked when plugging in the toaster"
   ],
   "urgency": "within_48h",
   "zip": "95618",
@@ -19,8 +16,8 @@
   "owner_or_renter": null,
   "availability": null,
   "category_details": {
-    "scope": "just that one outlet, rest of kitchen works",
-    "hazard_signs": "just one spark, outlet isn't hot"
+    "scope": "one outlet in the kitchen",
+    "hazard_signs": "sparks when plugging in the toaster"
   },
   "safety_flags": [
     "sparks_or_smoke"

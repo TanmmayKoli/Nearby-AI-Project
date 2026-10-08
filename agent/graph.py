@@ -2,7 +2,7 @@
 
 Per turn:
 
-    START ─(entry_route)─┬─ closed ─► END                       (conversation already ended)
+    START ─(entry_route)─┬─ after_end ─► END                    (conversation already ended: short reply, lead untouched)
                          └─ safety_check ─(after_safety)─┬─ emergency_response ─► END   (gas: no lead)
                                                          ├─ consent_reply ─┬─ create_lead ─► END
                                                          │                 ├─ extract (user wants changes)
@@ -10,7 +10,6 @@ Per turn:
                                                          └─ extract ─ route ─┬─ ask_next ─► END
                                                                              ├─ clarify ─► END
                                                                              ├─ out_of_scope ─► END
-                                                                             ├─ wildlife_pivot ─► END  (redirect + "any damage?")
                                                                              ├─ emergency_response ─► END
                                                                              ├─ no_contact ─► END
                                                                              └─ match_providers ─ summarize ─ confirm ─► END
@@ -36,7 +35,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from agent import nodes
-from agent.config import AGENT_MODEL, ANTHROPIC_API_KEY, LEADS_DIR, LLM_MAX_RETRIES, LLM_TIMEOUT_SECONDS, TRANSCRIPTS_DIR
+from agent.config import AGENT_MODEL, ANTHROPIC_API_KEY, EXTRACT_MODEL, LEADS_DIR, LLM_MAX_RETRIES, LLM_TIMEOUT_SECONDS, TRANSCRIPTS_DIR
 from agent.state import LeadState
 from providers.match import match_providers
 
@@ -60,36 +59,42 @@ def build_graph(
     checkpointer: Any = None,
     leads_dir: Path | None = _DEFAULT,  # None = validate the lead but don't write it
     matcher: Callable[..., list[dict[str, Any]]] = match_providers,
+    extract_llm: BaseChatModel | None = None,
+    demo: bool = False,  # deployed demo: final message says nothing was sent
 ):
+    """`llm` writes everything the user reads (questions, summary, consent);
+    `extract_llm` only does extraction (a faster model, EXTRACT_MODEL). If only
+    `llm` is passed (tests), it's used for both."""
+    if extract_llm is None:
+        extract_llm = llm or get_llm(EXTRACT_MODEL)
     llm = llm or get_llm()
     leads_dir = LEADS_DIR if leads_dir is _DEFAULT else leads_dir
     g = StateGraph(LeadState)
 
     g.add_node("safety_check", nodes.safety_check)
     g.add_node("emergency_response", nodes.emergency_response)
-    g.add_node("extract", partial(nodes.extract, llm=llm))
+    g.add_node("extract", partial(nodes.extract, llm=extract_llm))
     g.add_node("route", nodes.route)
     g.add_node("ask_next", partial(nodes.ask_next, llm=llm))
     g.add_node("clarify", partial(nodes.clarify, llm=llm))
     g.add_node("out_of_scope", nodes.out_of_scope)
-    g.add_node("wildlife_pivot", nodes.wildlife_pivot)
     g.add_node("no_contact", partial(nodes.no_contact, matcher=matcher))
     g.add_node("match_providers", partial(nodes.match_providers_node, matcher=matcher))
     g.add_node("summarize", partial(nodes.summarize, llm=llm))
     g.add_node("confirm", nodes.confirm)
     g.add_node("consent_reply", partial(nodes.consent_reply, llm=llm))
-    g.add_node("create_lead", partial(nodes.create_lead, leads_dir=leads_dir))
-    g.add_node("closed", nodes.closed)
+    g.add_node("create_lead", partial(nodes.create_lead, leads_dir=leads_dir, demo=demo))
+    g.add_node("after_end", partial(nodes.after_end, llm=llm))
 
-    g.add_conditional_edges(START, nodes.entry_route, ["safety_check", "closed"])
+    g.add_conditional_edges(START, nodes.entry_route, ["safety_check", "after_end"])
     g.add_conditional_edges("safety_check", nodes.after_safety, ["emergency_response", "consent_reply", "extract"])
     g.add_conditional_edges("extract", nodes.after_llm_node("route"), {"route": "route", "end": END})
     g.add_conditional_edges(
         "route",
         nodes.after_route,
-        ["ask_next", "clarify", "out_of_scope", "wildlife_pivot", "emergency_response", "no_contact", "match_providers"],
+        ["ask_next", "clarify", "out_of_scope", "emergency_response", "no_contact", "match_providers"],
     )
-    for terminal in ["ask_next", "clarify", "out_of_scope", "wildlife_pivot", "emergency_response", "no_contact"]:
+    for terminal in ["ask_next", "clarify", "out_of_scope", "emergency_response", "no_contact"]:
         g.add_edge(terminal, END)
     g.add_conditional_edges("match_providers", nodes.after_match, {"summarize": "summarize", "end": END})
     g.add_conditional_edges("summarize", nodes.after_llm_node("confirm"), {"confirm": "confirm", "end": END})
@@ -98,7 +103,7 @@ def build_graph(
         "consent_reply", nodes.after_consent, {"create_lead": "create_lead", "extract": "extract", "end": END}
     )
     g.add_edge("create_lead", END)
-    g.add_edge("closed", END)
+    g.add_edge("after_end", END)
 
     return g.compile(checkpointer=checkpointer or MemorySaver())
 
@@ -112,13 +117,35 @@ def get_state(graph, thread_id: str) -> LeadState:
     return LeadState(**values) if values else LeadState()
 
 
+def turn_config(thread_id: str, source: str | None = None, callbacks: list | None = None) -> dict:
+    """Graph config for one turn. thread_id/source also go in metadata, so when
+    LangSmith tracing is on (local only, see .env.example) each turn's trace is
+    tagged with its conversation and LangSmith groups them into one thread."""
+    return {
+        "configurable": {"thread_id": thread_id},
+        "metadata": {"thread_id": thread_id, "source": source},
+        "tags": [source] if source else [],
+        "run_name": "turn",
+        "callbacks": callbacks or [],
+    }
+
+
 def run_turn(
-    graph, thread_id: str, text: str, transcripts_dir: Path | None = _DEFAULT, source: str | None = None
+    graph,
+    thread_id: str,
+    text: str,
+    transcripts_dir: Path | None = _DEFAULT,
+    source: str | None = None,
+    callbacks: list | None = None,
+    initial: dict[str, Any] | None = None,
 ) -> LeadState:
     """Send one user message, return the new state, and save the transcript
-    (tagged with `source`, e.g. "app" or "test")."""
+    (tagged with `source`, e.g. "app" or "test"). `callbacks` are LangChain
+    callback handlers, e.g. timing.NodeTimer in the live tests. `initial` sets
+    state fields along with the message (e.g. zip/contact carried into a new
+    request the user agreed to reuse)."""
     transcripts_dir = TRANSCRIPTS_DIR if transcripts_dir is _DEFAULT else transcripts_dir
-    graph.invoke({"messages": [HumanMessage(text)]}, {"configurable": {"thread_id": thread_id}})
+    graph.invoke({"messages": [HumanMessage(text)], **(initial or {})}, turn_config(thread_id, source, callbacks))
     state = get_state(graph, thread_id)
     if transcripts_dir is not None:
         save_transcript(state, thread_id, transcripts_dir, source)
@@ -131,7 +158,13 @@ STREAMED_NODES = {"ask_next", "clarify"}
 
 
 def stream_turn(
-    graph, thread_id: str, text: str, transcripts_dir: Path | None = _DEFAULT, source: str | None = None
+    graph,
+    thread_id: str,
+    text: str,
+    transcripts_dir: Path | None = _DEFAULT,
+    source: str | None = None,
+    callbacks: list | None = None,
+    initial: dict[str, Any] | None = None,
 ) -> Iterator[str]:
     """Same as run_turn, but yields the reply text as it's generated (for the UI).
 
@@ -141,9 +174,9 @@ def stream_turn(
     exactly as with run_turn, so behavior is identical.
     """
     transcripts_dir = TRANSCRIPTS_DIR if transcripts_dir is _DEFAULT else transcripts_dir
-    config = {"configurable": {"thread_id": thread_id}}
     for mode, payload in graph.stream(
-        {"messages": [HumanMessage(text)]}, config, stream_mode=["updates", "messages"]
+        {"messages": [HumanMessage(text)], **(initial or {})}, turn_config(thread_id, source, callbacks),
+        stream_mode=["updates", "messages"]
     ):
         if mode == "updates":
             route_update = payload.get("route") or {}

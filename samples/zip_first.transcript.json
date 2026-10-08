@@ -1,6 +1,7 @@
 {
-  "thread_id": "a01e882003f8",
-  "saved_at": "2026-10-08T08:53:19.856966+00:00",
+  "thread_id": "1ff93140b7f0",
+  "source": "test",
+  "saved_at": "2026-10-08T21:33:31.367846+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,7 +9,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, that's a common one and something a local pro can help with. What's your name, and what's the best phone number for them to reach you (email works too if you'd rather)?"
+      "content": "Thanks, a running toilet is definitely worth getting fixed. What's your name, and what's the best phone number for a pro to reach you (email works too if you'd prefer)?"
     },
     {
       "role": "user",
@@ -24,7 +25,7 @@
     },
     {
       "role": "assistant",
-      "content": "You're all set. Your request (ref 921d68d8) is ready to go to Advanced Plumbing, Heating and Air, Proficient Plumbing and Drain Davis, Bullseye Leak Detection , Inc. They'll have your number and the details above, so you won't need to explain it again."
+      "content": "You're all set. Your request (ref c8be17c6) is ready to go to Advanced Plumbing, Heating and Air, Proficient Plumbing and Drain Davis, Bullseye Leak Detection , Inc. They'll have your number and the details above, so you won't need to explain it again."
     }
   ],
   "state": {
@@ -44,7 +45,7 @@
     "availability": null,
     "category_details": {
       "fixture": "toilet",
-      "symptom": "running constantly"
+      "symptom": "won't stop running"
     },
     "safety_flags": [],
     "matched_providers": [
@@ -113,7 +114,8 @@
     "out_of_scope_reason": null,
     "declined": [],
     "cause_unknown": false,
-    "pivot_offered": false,
+    "repair_offer": null,
+    "repair_category": null,
     "category_confidence": 0.95,
     "missing_fields": [],
     "turn_count": 3,
@@ -124,7 +126,7 @@
     ],
     "extraction_errors": [],
     "llm_errors": [],
-    "lead_id": "921d68d8",
+    "lead_id": "c8be17c6",
     "category_locked": null,
     "warned": [],
     "pending_notice": null

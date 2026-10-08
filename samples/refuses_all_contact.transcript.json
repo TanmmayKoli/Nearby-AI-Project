@@ -1,6 +1,7 @@
 {
-  "thread_id": "b303279bca3e",
-  "saved_at": "2026-10-08T08:52:43.967419+00:00",
+  "thread_id": "dd162fbee7a1",
+  "source": "test",
+  "saved_at": "2026-10-08T21:32:54.871140+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,15 +9,7 @@
     },
     {
       "role": "assistant",
-      "content": "Sorry about that, those are a hassle. Is it just the disposal itself that needs fixing, or is there also a lot of standing water that needs cleaning up?"
-    },
-    {
-      "role": "user",
-      "content": "I'm not sure."
-    },
-    {
-      "role": "assistant",
-      "content": "No worries, a pro can sort that out when they look at it. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
+      "content": "Sorry to hear that, a dead disposal is a hassle. How soon are you hoping to have someone take a look: right away, in the next day or two, this week, or whenever works?"
     },
     {
       "role": "user",
@@ -24,7 +17,15 @@
     },
     {
       "role": "assistant",
-      "content": "Sounds good, thanks. When you use that sink, is it leaking, clogged or backing up, or is no water coming out at all?"
+      "content": "Sounds good, no rush. Do you happen to know the brand of the disposal? It's fine if you're not sure."
+    },
+    {
+      "role": "user",
+      "content": "It's an InSinkErator garbage disposal."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's helpful. When you flip the switch, what happens? For example, is it totally silent, humming, or making some other noise?"
     },
     {
       "role": "user",
@@ -32,7 +33,7 @@
     },
     {
       "role": "assistant",
-      "content": "That hum without spinning is helpful to know. What's your zip code so I can find pros near you?"
+      "content": "That humming without spinning is a useful clue to pass along to a pro. What's your zip code so I can look for pros near you?"
     },
     {
       "role": "user",
@@ -40,7 +41,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, that's Davis, so we've got pros nearby. What's your name, and the best phone number for a pro to reach you? Email is fine too if you'd rather."
+      "content": "Thanks, that's Davis, so we've got you covered. What's your name, and the best phone number for a pro to reach you? Email works too if you'd rather, it's just so the pro can contact you."
     },
     {
       "role": "user",
@@ -48,7 +49,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, Dana, no problem on the phone number. Would you be comfortable sharing an email address instead, so a pro can reach you that way?"
+      "content": "No problem, Dana. Would you be comfortable sharing an email address instead, so a pro can reach you that way?"
     },
     {
       "role": "user",
@@ -56,7 +57,7 @@
     },
     {
       "role": "assistant",
-      "content": "Totally understand, Dana. The catch is that a pro needs some way to reach you in order to take the job and set up a time. Would you be willing to share either a phone number or an email, whichever you're more comfortable with?"
+      "content": "Totally understand, Dana. The catch is that a pro needs some way to reach you in order to take the job, so I can't pass it along without either a phone number or an email. Would you be open to sharing just one of them? No pressure if not."
     },
     {
       "role": "user",
@@ -64,14 +65,14 @@
     },
     {
       "role": "assistant",
-      "content": "Understood. I can't send a request without a way for the pro to reach you. You can still contact these pros directly:\n\n- Advanced Plumbing, Heating and Air: (707) 471-6135\n- Hall's Plumbing: (530) 443-5818\n- Proficient Plumbing and Drain Davis: (530) 303-0285"
+      "content": "Understood. I can't send a request without a way for the pro to reach you. You can still contact these pros directly:\n\n- Fair Appliance Repair Service: (916) 333-8388\n- Top Town Appliance Repair Service: (916) 800-2578\n- Davis Appliance Repair: (530) 231-4016"
     }
   ],
   "state": {
-    "category": "plumbing",
+    "category": "appliance_repair",
     "facts": [
-      "Garbage disposal stopped working",
-      "Garbage disposal hums but doesn't spin"
+      "garbage disposal stopped working",
+      "When switched on, the disposal hums but the blades don't spin"
     ],
     "problem_description": null,
     "urgency": "flexible",
@@ -84,70 +85,70 @@
     "owner_or_renter": null,
     "availability": null,
     "category_details": {
-      "fixture": "garbage disposal",
+      "appliance": "InSinkErator garbage disposal",
       "symptom": "hums but doesn't spin"
     },
     "safety_flags": [],
     "matched_providers": [
       {
-        "place_id": "ChIJeeCtJu6YDGUR3pHDzIbyCEw",
-        "name": "Advanced Plumbing, Heating and Air",
-        "phone": "(707) 471-6135",
-        "address": "1260 Lake Blvd Ste 204, Davis, CA 95616, USA",
-        "city": "Davis",
-        "zip": "95616",
-        "lat": 38.554282199999996,
-        "lng": -121.78694530000001,
+        "place_id": "ChIJFa6GiEIpm4ARriGbr9i6hWE",
+        "name": "Fair Appliance Repair Service",
+        "phone": "(916) 333-8388",
+        "address": "341 Rick Heinrich Cir, Sacramento, CA 95835, USA",
+        "city": "Sacramento",
+        "zip": "95835",
+        "lat": 38.6801914,
+        "lng": -121.5024572,
         "location_source": "exact",
         "business_status": "OPERATIONAL",
-        "primary_type": "general_contractor",
-        "rating": 4.9,
-        "review_count": 381,
-        "website": "https://advancedphvac.com/area/davis-ca-ac-repair/?utm_source=google&utm_medium=organic&utm_campaign=gbp_davis-ca",
-        "category": "plumbing",
-        "source_query": "plumber in Davis, CA",
-        "fetched_at": "2026-10-08T03:01:30.399381Z",
-        "distance_miles": 2.4
-      },
-      {
-        "place_id": "ChIJ9YSR60fRhIARj4nOoUq5NMY",
-        "name": "Hall's Plumbing",
-        "phone": "(530) 443-5818",
-        "address": "346 Main St, Woodland, CA 95695, USA",
-        "city": "Woodland",
-        "zip": "95695",
-        "lat": 38.6770991,
-        "lng": -121.7766199,
-        "location_source": "exact",
-        "business_status": "OPERATIONAL",
-        "primary_type": "plumber",
-        "rating": 4.9,
-        "review_count": 701,
-        "website": "https://www.hallsplumbing.net/",
-        "category": "plumbing",
-        "source_query": "plumber in Davis, CA",
-        "fetched_at": "2026-10-08T03:01:30.399381Z",
-        "distance_miles": 8.7
-      },
-      {
-        "place_id": "ChIJFT80JhwphYARMEiROUchaXY",
-        "name": "Proficient Plumbing and Drain Davis",
-        "phone": "(530) 303-0285",
-        "address": "140 B St suite 6A, Davis, CA 95616, USA",
-        "city": "Davis",
-        "zip": "95616",
-        "lat": 38.542482299999996,
-        "lng": -121.74381260000001,
-        "location_source": "exact",
-        "business_status": "OPERATIONAL",
-        "primary_type": "plumber",
+        "primary_type": "service",
         "rating": 5.0,
-        "review_count": 49,
-        "website": "https://www.proficientplumbinganddrain.com/",
-        "category": "plumbing",
-        "source_query": "plumber in Davis, CA",
+        "review_count": 775,
+        "website": "https://farshomeservices.com/",
+        "category": "appliance_repair",
+        "source_query": "appliance repair in Woodland, CA",
         "fetched_at": "2026-10-08T03:01:30.399381Z",
-        "distance_miles": 0.8
+        "distance_miles": 15.6
+      },
+      {
+        "place_id": "ChIJN8XUHeI13AYR0NEff4m1TrY",
+        "name": "Top Town Appliance Repair Service",
+        "phone": "(916) 800-2578",
+        "address": "2455 W Capitol Ave Unit 127, West Sacramento, CA 95691, USA",
+        "city": "West Sacramento",
+        "zip": "95691",
+        "lat": 38.5791335,
+        "lng": -121.54380439999998,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.9,
+        "review_count": 114,
+        "website": "https://toptownapplianceservice.com/",
+        "category": "appliance_repair",
+        "source_query": "appliance repair in Woodland, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 10.8
+      },
+      {
+        "place_id": "ChIJBZNfEXUphYARS-wUXvIBnfE",
+        "name": "Davis Appliance Repair",
+        "phone": "(530) 231-4016",
+        "address": "5th St, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.547368299999995,
+        "lng": -121.74047960000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.3,
+        "review_count": 18,
+        "website": "http://appliancerepairdavis.com/",
+        "category": "appliance_repair",
+        "source_query": "appliance repair in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 0.5
       }
     ],
     "consent_to_share": false,
@@ -156,9 +157,10 @@
       "phone",
       "email"
     ],
-    "cause_unknown": false,
-    "pivot_offered": false,
-    "category_confidence": 0.6,
+    "cause_unknown": true,
+    "repair_offer": null,
+    "repair_category": null,
+    "category_confidence": 0.85,
     "missing_fields": [
       "contact"
     ],
@@ -166,8 +168,8 @@
     "status": "declined",
     "last_route": "no_contact",
     "asked": [
-      "clarify",
       "urgency",
+      "detail:appliance",
       "detail:symptom",
       "zip",
       "contact",
@@ -177,7 +179,7 @@
     "extraction_errors": [],
     "llm_errors": [],
     "lead_id": null,
-    "category_locked": "plumbing",
+    "category_locked": null,
     "warned": [],
     "pending_notice": null
   }

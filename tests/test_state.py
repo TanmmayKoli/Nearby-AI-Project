@@ -102,7 +102,7 @@ def test_category_requires_confidence():
 
 def test_only_gas_is_hard_stop_and_out_of_scope_covers_all_reasons():
     assert HARD_STOP_FLAGS == {"gas_smell"}
-    assert set(OUT_OF_SCOPE) == {"utility_outage", "wildlife_removal", "other"}
+    assert set(OUT_OF_SCOPE) == {"utility_outage", "other"}
 
 
 def test_out_of_scope_reason_carries_over():

@@ -1,12 +1,10 @@
 {
-  "lead_id": "eb30c8e6",
-  "created_at": "2026-10-08T08:50:46.666291Z",
+  "lead_id": "ba4ea9fe",
+  "created_at": "2026-10-08T21:30:55.222773Z",
   "category": "electrical",
-  "problem_description": "A bedroom outlet sparks every time something is plugged in, and its cover plate feels warm. The sparking is only at that one outlet.",
+  "problem_description": "The customer has an outlet in the bedroom that sparks every time something is plugged into it.",
   "facts": [
-    "Bedroom outlet sparks every time something is plugged in",
-    "Sparking is only at that one bedroom outlet",
-    "Cover plate on the bedroom outlet feels warm"
+    "outlet in bedroom keeps sparking every time something is plugged in"
   ],
   "urgency": "emergency",
   "zip": "95616",
@@ -18,11 +16,12 @@
   "owner_or_renter": null,
   "availability": null,
   "category_details": {
-    "scope": "just the one bedroom outlet",
-    "hazard_signs": "keeps sparking, cover plate feels warm"
+    "scope": "one outlet in bedroom",
+    "hazard_signs": "sparking every time something is plugged in"
   },
   "safety_flags": [
-    "sparks_or_smoke"
+    "sparks_or_smoke",
+    "ongoing_electrical"
   ],
   "matched_providers": [
     {

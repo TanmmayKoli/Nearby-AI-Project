@@ -5,8 +5,16 @@ Usage:
     python -m providers.fetch             # call the API, write providers_raw.json + providers.json
     python -m providers.fetch --reselect  # rebuild providers.json from providers_raw.json (no API calls)
     python -m providers.fetch --review    # print a table of providers.json (combine with --reselect)
+    python -m providers.fetch --categories wildlife_removal --dry-run   # only these categories
+    python -m providers.fetch --categories wildlife_removal             # pull them, merge into
+        providers_raw.json (replacing only those categories), then reselect everything
 
-Manual exclusions live in providers/overrides.json (applied after the type allowlist).
+Manual overrides live in providers/overrides.json, each with a written reason:
+- "exclude": drop a provider the rules can't catch (applied after the type allowlist).
+- "include": allow ONE provider in ONE category despite the type allowlist (used
+  where Places types are useless, e.g. wildlife removal is typed "service" like
+  every pest control company). Optional "max_anchor_miles" widens the service
+  radius for that provider. Every other filter still applies.
 
 Two files:
 - providers_raw.json: every result we paid for, deduped. Lets us re-tune the
@@ -81,6 +89,9 @@ CATEGORY_TYPE_ALLOWLIST: dict[str, frozenset[str]] = {
     "appliance_repair": frozenset({"service"}),
     # GENERIC: handymen are typed general_contractor or service.
     "handyman": frozenset({"general_contractor", "service"}),
+    # Include-list only (overrides.json): wildlife companies are typed "service",
+    # same as insect/rodent pest control, so the type can't tell them apart.
+    "wildlife_removal": frozenset(),
 }
 
 # Stores that show up in service searches but don't do the work. Redundant with
@@ -98,14 +109,21 @@ EXCLUDED_PRIMARY_TYPES: frozenset[str] = frozenset(
 )
 
 
-def build_queries() -> list[tuple[str, str, str]]:
-    """(category, search_term, text_query) for every category term x city."""
+def build_queries(categories: list[str] | None = None) -> list[tuple[str, str, str]]:
+    """(category, search_term, text_query) for every category term x city.
+    `categories` limits it to those categories (None = all)."""
     return [
         (spec.key, term, f"{term} in {city}, CA")
         for spec in CATEGORIES.values()
+        if categories is None or spec.key in categories
         for term in spec.search_queries
         for city in CITIES
     ]
+
+
+def merge_raw(existing: list[Provider], fresh: list[Provider], categories: list[str]) -> list[Provider]:
+    """Replace only `categories` in the raw data; every other category is kept as is."""
+    return [p for p in existing if p.category not in categories] + fresh
 
 
 def search_text(client: httpx.Client, text_query: str, api_key: str) -> list[dict]:
@@ -170,12 +188,12 @@ def to_provider(place: dict, category: str, source_query: str, fetched_at: datet
     )
 
 
-def fetch_all(api_key: str) -> list[Provider]:
-    """Run every query. Dedupe on (place_id, category): a business can legitimately
-    appear in two categories (e.g. a plumber that also does water damage)."""
+def fetch_all(api_key: str, categories: list[str] | None = None) -> list[Provider]:
+    """Run every query (or only `categories`). Dedupe on (place_id, category): a business
+    can legitimately appear in two categories (e.g. a plumber that also does water damage)."""
     fetched_at = datetime.now(timezone.utc)
     seen: dict[tuple[str, str], Provider] = {}
-    queries = build_queries()
+    queries = build_queries(categories)
     with httpx.Client(timeout=20) as client:
         for i, (category, _, text_query) in enumerate(queries, 1):
             places = search_text(client, text_query, api_key)
@@ -200,14 +218,26 @@ def load_overrides(path: Path = OVERRIDES_PATH) -> dict[str, list[dict]]:
         return {}
     by_place: dict[str, list[dict]] = defaultdict(list)
     for entry in json.loads(path.read_text()):
-        if entry.get("action") != "exclude":
+        if entry.get("action") not in ("exclude", "include"):
             raise ValueError(f"unsupported override action: {entry.get('action')}")
+        if not entry.get("reason"):
+            raise ValueError(f"override without a reason: {entry}")
         by_place[entry["place_id"]].append(entry)
     return by_place
 
 
+def include_entry(p: Provider, overrides: dict[str, list[dict]]) -> dict | None:
+    """The "include" override for this provider in its category, if any."""
+    return next(
+        (e for e in overrides.get(p.place_id, []) if e.get("action") == "include" and e["category"] == p.category),
+        None,
+    )
+
+
 def override_reason(p: Provider, overrides: dict[str, list[dict]]) -> str | None:
     for entry in overrides.get(p.place_id, []):
+        if entry.get("action") == "include":
+            continue
         cats = entry["categories"]
         if cats == "all" or p.category in cats:
             return f"override: {entry['reason']}"
@@ -223,7 +253,8 @@ def exclusion_reason(p: Provider, overrides: dict[str, list[dict]]) -> str | Non
         return f"business_status={p.business_status}"
     if p.primary_type in EXCLUDED_PRIMARY_TYPES:
         return f"retail primary_type={p.primary_type}"
-    if p.primary_type not in CATEGORY_TYPE_ALLOWLIST.get(p.category, frozenset()):
+    included = include_entry(p, overrides)
+    if not included and p.primary_type not in CATEGORY_TYPE_ALLOWLIST.get(p.category, frozenset()):
         return f"type {p.primary_type} not allowed for {p.category}"
     if reason := override_reason(p, overrides):
         return reason
@@ -234,7 +265,8 @@ def exclusion_reason(p: Provider, overrides: dict[str, list[dict]]) -> str | Non
     anchor = nearest_anchor(p)
     if anchor is None:
         return "no location"
-    if anchor[1] > SERVICE_RADIUS_MILES:
+    radius = included.get("max_anchor_miles", SERVICE_RADIUS_MILES) if included else SERVICE_RADIUS_MILES
+    if anchor[1] > radius:
         return f"out of area ({anchor[1]:.0f} mi from {anchor[0]})"
     return None
 
@@ -354,8 +386,8 @@ def print_summary(providers: list[Provider]) -> None:
         print(f"  {cat:<18} {by_cat.get(cat, 0)}")
 
 
-def dry_run() -> None:
-    queries = build_queries()
+def dry_run(categories: list[str] | None = None) -> None:
+    queries = build_queries(categories)
     print(f"{len(queries)} Text Search requests (pageSize={PAGE_SIZE}, no pagination):\n")
     for _, _, text_query in queries:
         print(f"  {text_query}")
@@ -371,10 +403,15 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="print the plan, no API calls")
     parser.add_argument("--reselect", action="store_true", help="rebuild providers.json from providers_raw.json")
     parser.add_argument("--review", action="store_true", help="print a table of providers.json")
+    parser.add_argument("--categories", nargs="+", metavar="CATEGORY",
+                        help="fetch only these categories and merge them into providers_raw.json")
     args = parser.parse_args()
+    unknown = set(args.categories or []) - set(CATEGORIES)
+    if unknown:
+        sys.exit(f"Unknown categories: {', '.join(sorted(unknown))}. Choose from: {', '.join(CATEGORIES)}")
 
     if args.dry_run:
-        dry_run()
+        dry_run(args.categories)
         return
 
     if args.review and not args.reselect:
@@ -386,7 +423,11 @@ def main() -> None:
     else:
         if not GOOGLE_PLACES_API_KEY:
             sys.exit("GOOGLE_PLACES_API_KEY is not set (see .env.example).")
-        raw = fetch_all(GOOGLE_PLACES_API_KEY)
+        raw = fetch_all(GOOGLE_PLACES_API_KEY, args.categories)
+        if args.categories:  # partial pull: keep every other category's raw results
+            fresh = len(raw)
+            raw = merge_raw(load(RAW_PATH), raw, args.categories)
+            print(f"\nMerged {fresh} new {', '.join(args.categories)} results into {RAW_PATH.name}")
         write(RAW_PATH, raw)
         print(f"\nWrote {len(raw)} raw providers to {RAW_PATH.name}")
 

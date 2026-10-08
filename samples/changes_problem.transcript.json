@@ -1,6 +1,7 @@
 {
-  "thread_id": "ce378a30330d",
-  "saved_at": "2026-10-08T08:53:11.103785+00:00",
+  "thread_id": "a4c1b4904092",
+  "source": "test",
+  "saved_at": "2026-10-08T21:33:23.199168+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,7 +9,7 @@
     },
     {
       "role": "assistant",
-      "content": "Sorry you're dealing with that. Do you mainly need someone to find and fix the leaking pipe, or to dry out and clean up water that's already pooled or soaked in?"
+      "content": "Sorry you're dealing with that, a leak coming through the ceiling is stressful. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
     },
     {
       "role": "user",
@@ -16,7 +17,23 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks for checking, that helps. Do you know what caused the damage, like the storm, the age of the roof, or a fallen tree or branch?"
+      "content": "Thanks for checking, that helps. Just to make sure I get this right: how soon do you need someone to come out? Right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "Sometime this week is fine."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, sometime this week works. Is water still dripping inside right now, or has it stopped for the moment?"
+    },
+    {
+      "role": "user",
+      "content": "Only when it rains."
+    },
+    {
+      "role": "assistant",
+      "content": "That helps, thanks. Do you have any idea what caused the roof problem, like a storm, the roof's age, or a tree?"
     },
     {
       "role": "user",
@@ -24,7 +41,7 @@
     },
     {
       "role": "assistant",
-      "content": "No problem, a roofer can help figure that out. What's your zip code so I can find pros near you?"
+      "content": "No problem, a pro can help sort that out. What's your zip code so I can find roofers near you?"
     },
     {
       "role": "user",
@@ -32,7 +49,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, we have pros in Davis. What's your name and the best phone number for a roofer to reach you? Email works too if you'd rather. If you're comfortable sharing your address, the crew can head straight there, but that's totally optional."
+      "content": "Thanks, that's in our Davis area. What's your name, and the best phone number for a pro to reach you? Email works too if you'd rather, it's just so the pro can contact you."
     },
     {
       "role": "user",
@@ -40,7 +57,7 @@
     },
     {
       "role": "assistant",
-      "content": "Here's the request I'll send:\n\n**Roofing** \u00b7 Emergency \u00b7 95616\n\nThe customer has water dripping from the kitchen ceiling, with rain coming in through the roof above the kitchen.\n\nContact: Jordan Lee, (530) 555-0164\n\nPros near you:\n\n1. Lucas Roofing, Davis \u00b7 5.0\u2605 (15 reviews) \u00b7 1.8 mi\n2. Xclusive Roof Repair Davis, Davis \u00b7 4.9\u2605 (15 reviews) \u00b7 2.2 mi\n3. Scott Family Roof Repair, Woodland \u00b7 4.8\u2605 (23 reviews) \u00b7 8.0 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+      "content": "Here's the request I'll send:\n\n**Roofing** \u00b7 Within a week \u00b7 95616\n\nRain is leaking through the roof above the kitchen, dripping only while it's raining.\n\nContact: Jordan Lee, (530) 555-0164\n\nPros near you:\n\n1. Powers Roof Service, Rocklin \u00b7 5.0\u2605 (257 reviews) \u00b7 13.4 mi\n2. Roof Solutions Inc, Vacaville \u00b7 4.9\u2605 (267 reviews) \u00b7 14.2 mi\n3. Lucas Roofing, Davis \u00b7 5.0\u2605 (15 reviews) \u00b7 1.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
     },
     {
       "role": "user",
@@ -48,17 +65,17 @@
     },
     {
       "role": "assistant",
-      "content": "You're all set. Your request (ref e8e3dee7) is ready to go to Lucas Roofing, Xclusive Roof Repair Davis, Scott Family Roof Repair. They'll have your number and the details above, so you won't need to explain it again.\n\nIf you'd rather not wait, you can call any of them now:\n\n- Lucas Roofing: (530) 304-3665\n- Xclusive Roof Repair Davis: (530) 444-6567\n- Scott Family Roof Repair: (530) 922-2567"
+      "content": "You're all set. Your request (ref 7e0883f8) is ready to go to Powers Roof Service, Roof Solutions Inc, Lucas Roofing. They'll have your number and the details above, so you won't need to explain it again."
     }
   ],
   "state": {
     "category": "roofing",
     "facts": [
-      "Water is dripping from the kitchen ceiling",
-      "Rain is coming in through the roof above the kitchen"
+      "Rain is coming in through the roof above the kitchen",
+      "Water only drips when it rains"
     ],
-    "problem_description": "The customer has water dripping from the kitchen ceiling, with rain coming in through the roof above the kitchen.",
-    "urgency": "emergency",
+    "problem_description": "Rain is leaking through the roof above the kitchen, dripping only while it's raining.",
+    "urgency": "within_week",
     "zip": "95616",
     "name": "Jordan Lee",
     "contact_phone": "(530) 555-0164",
@@ -68,11 +85,51 @@
     "owner_or_renter": null,
     "availability": null,
     "category_details": {
-      "active_leak": "yes, rain coming in above kitchen",
+      "active_leak": "Only when it rains",
       "cause": "unknown"
     },
     "safety_flags": [],
     "matched_providers": [
+      {
+        "place_id": "ChIJsQLxsuU8m4ARmvt6-6Upunk",
+        "name": "Powers Roof Service",
+        "phone": "(916) 316-2700",
+        "address": "2457 Pinnacles Dr, Rocklin, CA 95677, USA",
+        "city": "Rocklin",
+        "zip": "95677",
+        "lat": 38.5617825,
+        "lng": -121.4937261,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 5.0,
+        "review_count": 257,
+        "website": "http://www.powerstileroofrepair.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Sacramento, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 13.4
+      },
+      {
+        "place_id": "ChIJpVSJjMYhhYARU8R0hvj8dLQ",
+        "name": "Roof Solutions Inc",
+        "phone": "(707) 449-7663",
+        "address": "4599 Pace Ln, Vacaville, CA 95688, USA",
+        "city": "Vacaville",
+        "zip": "95688",
+        "lat": 38.4436268,
+        "lng": -121.96335260000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 4.9,
+        "review_count": 267,
+        "website": "https://roofsolutionsca.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 14.2
+      },
       {
         "place_id": "ChIJm_Kh3yoqhYARcjhyKClxT6Y",
         "name": "Lucas Roofing",
@@ -92,67 +149,30 @@
         "source_query": "roofing contractor in Davis, CA",
         "fetched_at": "2026-10-08T03:01:30.399381Z",
         "distance_miles": 1.8
-      },
-      {
-        "place_id": "ChIJlyoXBekrhYARA_bntZAJo8Y",
-        "name": "Xclusive Roof Repair Davis",
-        "phone": "(530) 444-6567",
-        "address": "4120 Chiles Rd 3 Suite 3, Davis, CA 95618, USA",
-        "city": "Davis",
-        "zip": "95618",
-        "lat": 38.5503394,
-        "lng": -121.70135800000001,
-        "location_source": "exact",
-        "business_status": "OPERATIONAL",
-        "primary_type": "roofing_contractor",
-        "rating": 4.9,
-        "review_count": 15,
-        "website": "http://davisroofrepair.top/",
-        "category": "roofing",
-        "source_query": "roofing contractor in Davis, CA",
-        "fetched_at": "2026-10-08T03:01:30.399381Z",
-        "distance_miles": 2.2
-      },
-      {
-        "place_id": "ChIJub8W3JXRhIARiNuWS_dIbBk",
-        "name": "Scott Family Roof Repair",
-        "phone": "(530) 922-2567",
-        "address": "1120 Gum Ave Unit C Unit C, Woodland, CA 95695, USA",
-        "city": "Woodland",
-        "zip": "95695",
-        "lat": 38.6678929,
-        "lng": -121.76615999999999,
-        "location_source": "exact",
-        "business_status": "OPERATIONAL",
-        "primary_type": "roofing_contractor",
-        "rating": 4.8,
-        "review_count": 23,
-        "website": "http://scottfamilyroofrepair.cc/",
-        "category": "roofing",
-        "source_query": "roofing contractor in Woodland, CA",
-        "fetched_at": "2026-10-08T03:01:30.399381Z",
-        "distance_miles": 8.0
       }
     ],
     "consent_to_share": true,
     "out_of_scope_reason": null,
     "declined": [],
     "cause_unknown": true,
-    "pivot_offered": false,
-    "category_confidence": 0.9,
+    "repair_offer": null,
+    "repair_category": null,
+    "category_confidence": 0.95,
     "missing_fields": [],
-    "turn_count": 6,
+    "turn_count": 8,
     "status": "converted",
     "last_route": "consent:yes",
     "asked": [
-      "clarify",
+      "urgency",
+      "urgency",
+      "detail:active_leak",
       "detail:cause",
       "zip",
       "contact"
     ],
     "extraction_errors": [],
     "llm_errors": [],
-    "lead_id": "e8e3dee7",
+    "lead_id": "7e0883f8",
     "category_locked": null,
     "warned": [],
     "pending_notice": null

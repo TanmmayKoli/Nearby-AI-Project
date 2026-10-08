@@ -22,6 +22,10 @@ PROVIDERS_PATH = Path(__file__).parent / "providers.json"
 PRIOR_RATING = 4.0  # what we assume about a provider with no reviews
 PRIOR_WEIGHT = 20  # reviews needed before a provider's own rating dominates
 MAX_MATCH_DISTANCE_MILES = 25  # beyond this, don't recommend
+# Per-category exceptions. Wildlife: one verified local company (Creature Catchers,
+# Roseville, ~28 mi from Davis). 40 mi reaches it from all four cities. Its site
+# lists Sacramento/Placer counties, not Yolo, so Davis coverage is unconfirmed.
+MAX_MATCH_DISTANCE_BY_CATEGORY = {"wildlife_removal": 40}
 
 
 # Service area: within this distance of one of the four cities we cover.
@@ -78,12 +82,13 @@ def match_providers(
         return []
 
     penalty = penalty_per_mile(urgency)
+    max_miles = MAX_MATCH_DISTANCE_BY_CATEGORY.get(category, MAX_MATCH_DISTANCE_MILES)
     scored = []
     for p in providers:
         if p.category != category or p.lat is None or p.lng is None or not p.phone:
             continue
         miles = miles_between(user_loc, (p.lat, p.lng))
-        if miles > MAX_MATCH_DISTANCE_MILES:
+        if miles > max_miles:
             continue
         score = bayesian_rating(p.rating, p.review_count) - penalty * miles
         scored.append((score, miles, p))

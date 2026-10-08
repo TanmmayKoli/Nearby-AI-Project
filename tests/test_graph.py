@@ -115,8 +115,11 @@ def test_basement_happy_path_writes_lead_and_transcript(tmp_path):
     assert transcript["state"]["status"] == "converted"
     assert transcript["messages"][0]["role"] == "user" and len(transcript["messages"]) == 10
 
-    s = turn(graph, tid, "thanks!", tmp_path)  # closed conversation
-    assert "wrapped up" in s.messages[-1].content
+    # After the end: a short LLM reply; the lead and state are never touched.
+    llm.texts.append("You're welcome! Hope the basement dries out soon.")
+    s = turn(graph, tid, "thanks!", tmp_path)
+    assert s.messages[-1].content == "You're welcome! Hope the basement dries out soon."
+    assert s.status == "converted" and json.loads((tmp_path / "leads" / f"{s.lead_id}.json").read_text()) == lead
 
 
 def test_retry_once_then_success_is_logged(tmp_path):
@@ -424,3 +427,71 @@ def test_stream_turn_streams_nothing_for_fixed_replies(tmp_path):
     graph, tid = make_graph(streaming_llm([]), tmp_path)
     assert "".join(stream_turn(graph, tid, "I smell gas", transcripts_dir=None)) == ""
     assert get_state(graph, tid).status == "emergency"  # shown from state after the turn
+
+
+# --- extract model split + timing ---------------------------------------------------
+
+
+def test_extract_uses_extract_llm_and_replies_use_main_llm(tmp_path):
+    """Only the extract node talks to extract_llm; questions come from llm."""
+    extractor = FakeLLM(extractions=[{"category": "plumbing", "category_confidence": 0.9, "new_facts": ["Sink leaking"]}])
+    llm = FakeLLM(texts=["How soon do you need someone?"])  # no extractions: extract must not use it
+    graph = build_graph(llm=llm, extract_llm=extractor, leads_dir=tmp_path / "leads",
+                        matcher=lambda c, z, urgency=None: [PROVIDER])
+    tid = new_thread_id()
+    state = turn(graph, tid, "my sink is leaking", tmp_path)
+    assert state.messages[-1].content == "How soon do you need someone?"
+    assert extractor.extractions == [] and extractor.prompts == []  # extracted once, wrote no replies
+    assert len(llm.prompts) == 1
+
+
+def test_build_graph_defaults_to_extract_model_for_extraction(monkeypatch):
+    import agent.graph as graph_module
+    from agent.config import EXTRACT_MODEL
+
+    models = []
+    monkeypatch.setattr(graph_module, "get_llm", lambda model="AGENT_MODEL": models.append(model) or FakeLLM())
+    build_graph()
+    assert models == [EXTRACT_MODEL, "AGENT_MODEL"]
+
+
+def test_final_message_demo_says_not_sent_and_keeps_phones():
+    providers = [{**PROVIDER, "phone": "(530) 555-0199"}, {**PROVIDER, "name": "Second Co", "phone": "(916) 555-0100"}]
+    for urgency in ("emergency", "within_week"):
+        msg = nodes.final_message(_ready_state(urgency=urgency, matched_providers=providers), "abc123", demo=True)
+        assert "is ready to go to" not in msg and "demo" in msg and "won't contact you" in msg
+        assert "Test Restoration Co: (530) 555-0199" in msg and "Second Co: (916) 555-0100" in msg
+
+
+def test_node_timer_records_each_node(tmp_path):
+    from agent.timing import NodeTimer
+
+    llm = FakeLLM(extractions=[{"category": "plumbing", "category_confidence": 0.9, "new_facts": ["Sink leaking"]}],
+                  texts=["How soon do you need someone?"])
+    graph, tid = make_graph(llm, tmp_path)
+    timer = NodeTimer()
+    run_turn(graph, tid, "my sink is leaking", transcripts_dir=None, callbacks=[timer])
+    times = timer.totals()
+    assert set(times) == {"safety_check", "extract", "route", "ask_next"}
+    assert all(len(v) == 1 and v[0] >= 0 for v in times.values())
+
+
+def test_turn_config_tags_trace_with_thread_id(tmp_path):
+    """LangSmith groups traces by metadata thread_id; source goes in tags."""
+    from langchain_core.callbacks import BaseCallbackHandler
+
+    class RootRun(BaseCallbackHandler):
+        def __init__(self):
+            self.root = None
+
+        def on_chain_start(self, serialized, inputs, *, run_id, parent_run_id=None, tags=None, metadata=None, **kw):
+            if parent_run_id is None:
+                self.root = {"name": kw.get("name"), "tags": tags, "metadata": metadata}
+
+    llm = FakeLLM(extractions=[{"category": "plumbing", "category_confidence": 0.9, "new_facts": ["Sink leaking"]}],
+                  texts=["How soon do you need someone?"])
+    graph, tid = make_graph(llm, tmp_path)
+    handler = RootRun()
+    run_turn(graph, tid, "my sink is leaking", transcripts_dir=None, source="test", callbacks=[handler])
+    assert handler.root["name"] == "turn"
+    assert handler.root["metadata"]["thread_id"] == tid and "test" in handler.root["tags"]

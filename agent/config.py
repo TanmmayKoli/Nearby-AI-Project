@@ -31,7 +31,8 @@ def get_flag(name: str) -> bool:
     return (get_secret(name) or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
-AGENT_MODEL = get_secret("AGENT_MODEL", "claude-sonnet-5-5")
+AGENT_MODEL = get_secret("AGENT_MODEL", "claude-sonnet-5-5")  # everything the user reads
+EXTRACT_MODEL = get_secret("EXTRACT_MODEL", "claude-haiku-4-5-20251001")  # extract node only (speed)
 SIMULATOR_MODEL = get_secret("SIMULATOR_MODEL", "claude-haiku-5-5")
 ANTHROPIC_API_KEY = get_secret("ANTHROPIC_API_KEY")
 GOOGLE_PLACES_API_KEY = get_secret("GOOGLE_PLACES_API_KEY")

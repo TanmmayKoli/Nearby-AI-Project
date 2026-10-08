@@ -1,6 +1,7 @@
 {
-  "thread_id": "3d293dfd9428",
-  "saved_at": "2026-10-08T08:51:20.314028+00:00",
+  "thread_id": "46279fadbb23",
+  "source": "test",
+  "saved_at": "2026-10-08T21:31:39.048728+00:00",
   "messages": [
     {
       "role": "user",
@@ -13,9 +14,7 @@
   ],
   "state": {
     "category": null,
-    "facts": [
-      "Power has been out on the whole street since this morning"
-    ],
+    "facts": [],
     "problem_description": null,
     "urgency": null,
     "zip": null,
@@ -33,7 +32,8 @@
     "out_of_scope_reason": "utility_outage",
     "declined": [],
     "cause_unknown": false,
-    "pivot_offered": false,
+    "repair_offer": null,
+    "repair_category": null,
     "category_confidence": 0.0,
     "missing_fields": [],
     "turn_count": 1,

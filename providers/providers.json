@@ -1423,5 +1423,24 @@
     "category": "water_damage",
     "source_query": "water damage restoration in Woodland, CA",
     "fetched_at": "2026-10-08T03:01:30.399381Z"
+  },
+  {
+    "place_id": "ChIJpZWuDtUEm4AR7pyWHrJQdkI",
+    "name": "Creature Catchers Wildlife Management",
+    "phone": "(530) 885-7378",
+    "address": "311 Vernon St, Roseville, CA 95678, USA",
+    "city": "Roseville",
+    "zip": "95678",
+    "lat": 38.7485205,
+    "lng": -121.28408569999999,
+    "location_source": "exact",
+    "business_status": "OPERATIONAL",
+    "primary_type": "service",
+    "rating": 4.8,
+    "review_count": 75,
+    "website": "https://creaturecatchers.org/",
+    "category": "wildlife_removal",
+    "source_query": "wildlife removal in West Sacramento, CA",
+    "fetched_at": "2026-10-08T20:56:11.519242Z"
   }
 ]

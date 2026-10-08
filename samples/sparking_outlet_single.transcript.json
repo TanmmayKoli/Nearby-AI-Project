@@ -1,6 +1,7 @@
 {
-  "thread_id": "87c2503f4bc9",
-  "saved_at": "2026-10-08T08:50:22.079053+00:00",
+  "thread_id": "cdc134e96aad",
+  "source": "test",
+  "saved_at": "2026-10-08T21:30:42.844961+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,23 +9,7 @@
     },
     {
       "role": "assistant",
-      "content": "Safety first: stay away from it and don't touch the outlet or anything plugged in. If you can reach your breaker panel safely (not standing in water), switch off that circuit. If you see flames or the smoke gets worse, get out and call 911.\n\nThanks for letting me know. Is the problem limited to that one outlet, or have you noticed anything odd with other outlets or in other parts of the house?"
-    },
-    {
-      "role": "user",
-      "content": "Just that one outlet, the rest of the kitchen works."
-    },
-    {
-      "role": "assistant",
-      "content": "Got it, thanks. Besides the spark when you plugged in the toaster, have you noticed any burning smell, or does the outlet feel hot or look scorched?"
-    },
-    {
-      "role": "user",
-      "content": "Just the one spark. The outlet isn't hot."
-    },
-    {
-      "role": "assistant",
-      "content": "Thanks, that helps. What's your zip code so I can find pros near you?"
+      "content": "Safety first: stay away from it and don't touch the outlet or anything plugged in. If you can reach your breaker panel safely (not standing in water), switch off that circuit. If you see flames or the smoke gets worse, get out and call 911.\n\nThanks for letting me know about the outlet. So I can find electricians near you, what's your zip code?"
     },
     {
       "role": "user",
@@ -32,7 +17,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, we cover Davis. So a pro can contact you, what's your name and the best phone number to reach you? Email works too if you'd rather."
+      "content": "Thanks, that puts you in Davis. What's your name and the best phone number for a pro to reach you? Email works too if you'd rather. It's just so the pro can contact you about the outlet."
     },
     {
       "role": "user",
@@ -40,7 +25,7 @@
     },
     {
       "role": "assistant",
-      "content": "Here's the request I'll send:\n\n**Electrical** \u00b7 Within 48 hours \u00b7 95618\n\nA kitchen outlet sparked once when the customer plugged in a toaster. The outlet isn't hot, and the rest of the kitchen works.\n\nContact: Sam Lee, (916) 555-0142\n\nPros near you:\n\n1. Current Solution Electrical, Davis \u00b7 5.0\u2605 (13 reviews) \u00b7 1.9 mi\n2. Wisterman Electric, Woodland \u00b7 5.0\u2605 (54 reviews) \u00b7 8.1 mi\n3. Woodland Electrical Inc., Woodland \u00b7 4.9\u2605 (220 reviews) \u00b7 9.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+      "content": "Here's the request I'll send:\n\n**Electrical** \u00b7 Within 48 hours \u00b7 95618\n\nOne of the customer's kitchen outlets sparked when they plugged in a toaster.\n\nContact: Sam Lee, (916) 555-0142\n\nPros near you:\n\n1. Current Solution Electrical, Davis \u00b7 5.0\u2605 (13 reviews) \u00b7 1.9 mi\n2. Wisterman Electric, Woodland \u00b7 5.0\u2605 (54 reviews) \u00b7 8.1 mi\n3. Woodland Electrical Inc., Woodland \u00b7 4.9\u2605 (220 reviews) \u00b7 9.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
     },
     {
       "role": "user",
@@ -48,18 +33,15 @@
     },
     {
       "role": "assistant",
-      "content": "You're all set. Your request (ref 1c4e8d6a) is ready to go to Current Solution Electrical, Wisterman Electric, Woodland Electrical Inc. They'll have your number and the details above, so you won't need to explain it again."
+      "content": "You're all set. Your request (ref 2fec4d69) is ready to go to Current Solution Electrical, Wisterman Electric, Woodland Electrical Inc. They'll have your number and the details above, so you won't need to explain it again."
     }
   ],
   "state": {
     "category": "electrical",
     "facts": [
-      "One of the outlets in the kitchen sparked when the toaster was plugged in",
-      "Only that one outlet is affected; the rest of the kitchen works",
-      "It sparked only once",
-      "The outlet isn't hot"
+      "One of the outlets in the kitchen sparked when plugging in the toaster"
     ],
-    "problem_description": "A kitchen outlet sparked once when the customer plugged in a toaster. The outlet isn't hot, and the rest of the kitchen works.",
+    "problem_description": "One of the customer's kitchen outlets sparked when they plugged in a toaster.",
     "urgency": "within_48h",
     "zip": "95618",
     "name": "Sam Lee",
@@ -70,8 +52,8 @@
     "owner_or_renter": null,
     "availability": null,
     "category_details": {
-      "scope": "just that one outlet, rest of kitchen works",
-      "hazard_signs": "just one spark, outlet isn't hot"
+      "scope": "one outlet in the kitchen",
+      "hazard_signs": "sparks when plugging in the toaster"
     },
     "safety_flags": [
       "sparks_or_smoke"
@@ -142,21 +124,20 @@
     "out_of_scope_reason": null,
     "declined": [],
     "cause_unknown": false,
-    "pivot_offered": false,
+    "repair_offer": null,
+    "repair_category": null,
     "category_confidence": 0.95,
     "missing_fields": [],
-    "turn_count": 6,
+    "turn_count": 4,
     "status": "converted",
     "last_route": "consent:yes",
     "asked": [
-      "detail:scope",
-      "detail:hazard_signs",
       "zip",
       "contact"
     ],
     "extraction_errors": [],
     "llm_errors": [],
-    "lead_id": "1c4e8d6a",
+    "lead_id": "2fec4d69",
     "category_locked": null,
     "warned": [
       "sparks_or_smoke"

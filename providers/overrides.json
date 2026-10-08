@@ -72,5 +72,13 @@
       "water_damage"
     ],
     "reason": "not a restoration company"
+  },
+  {
+    "place_id": "ChIJpZWuDtUEm4AR7pyWHrJQdkI",
+    "name": "Creature Catchers Wildlife Management",
+    "action": "include",
+    "category": "wildlife_removal",
+    "max_anchor_miles": 20,
+    "reason": "verified wildlife company: site lists humane raccoon, opossum, skunk, squirrel and bat removal. In Roseville, 16 mi from Sacramento (normal limit 15); only verified local wildlife pro, so radius widened to 20. Site lists Sacramento/Placer/El Dorado/Nevada counties, not Yolo."
   }
 ]

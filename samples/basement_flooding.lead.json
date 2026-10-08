@@ -1,11 +1,11 @@
 {
-  "lead_id": "e1bebe61",
-  "created_at": "2026-10-08T08:49:56.327635Z",
+  "lead_id": "f3a87632",
+  "created_at": "2026-10-08T21:30:29.002850Z",
   "category": "water_damage",
-  "problem_description": "Water began coming into the customer's basement last night after the storm and is still coming in.",
+  "problem_description": "Water began coming into the customer's basement last night after a storm and is still seeping in slowly.",
   "facts": [
-    "Water started coming into the basement last night after the storm",
-    "Water is still coming into the basement"
+    "Water started coming into basement last night after a storm",
+    "Water is still actively seeping in slowly"
   ],
   "urgency": "emergency",
   "zip": "95616",
@@ -13,12 +13,12 @@
   "contact_phone": "(530) 555-0123",
   "contact_email": null,
   "address": null,
-  "property_type": null,
+  "property_type": "home",
   "owner_or_renter": null,
   "availability": null,
   "category_details": {
     "source": "storm",
-    "still_active": "yes, still coming in"
+    "still_active": "Yes, still seeping in slowly"
   },
   "safety_flags": [
     "active_flooding"

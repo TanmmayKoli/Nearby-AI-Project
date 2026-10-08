@@ -1,6 +1,7 @@
 {
-  "thread_id": "b09572cf517a",
-  "saved_at": "2026-10-08T08:50:46.693281+00:00",
+  "thread_id": "b864aeca774f",
+  "source": "test",
+  "saved_at": "2026-10-08T21:30:55.320700+00:00",
   "messages": [
     {
       "role": "user",
@@ -33,7 +34,8 @@
     "out_of_scope_reason": null,
     "declined": [],
     "cause_unknown": false,
-    "pivot_offered": false,
+    "repair_offer": null,
+    "repair_category": null,
     "category_confidence": 0.0,
     "missing_fields": [],
     "turn_count": 0,

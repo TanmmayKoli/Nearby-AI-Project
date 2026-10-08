@@ -44,8 +44,23 @@ PROVIDERS = [
 
 def test_queries_cover_every_term_and_city():
     queries = build_queries()
-    assert len(queries) == 40
+    assert len(queries) == 48  # 12 terms x 4 cities
     assert ("hvac", "HVAC repair", "HVAC repair in West Sacramento, CA") in queries
+
+
+def test_queries_for_selected_categories_only():
+    queries = build_queries(["wildlife_removal"])
+    assert len(queries) == 8 and {c for c, _, _ in queries} == {"wildlife_removal"}
+
+
+def test_merge_raw_replaces_only_the_fetched_categories():
+    from providers.fetch import merge_raw
+
+    old_wildlife = make("Old Critter Co", "95616", 4.5, 50, category="wildlife_removal")
+    new_wildlife = make("New Critter Co", "95616", 4.8, 80, category="wildlife_removal")
+    roofer = make("Davis Roofer", "95616", 4.9, 500, category="roofing")
+    merged = merge_raw([roofer, old_wildlife], [new_wildlife], ["wildlife_removal"])
+    assert [p.name for p in merged] == ["Davis Roofer", "New Critter Co"]
 
 
 def test_parse_city_zip():
@@ -188,7 +203,38 @@ def test_overrides_file_is_valid():
     for entries in overrides.values():
         for e in entries:
             assert e["reason"]
-            assert e["categories"] == "all" or set(e["categories"]) <= set(CATEGORIES)
+            if e["action"] == "include":
+                assert e["category"] in CATEGORIES
+            else:
+                assert e["categories"] == "all" or set(e["categories"]) <= set(CATEGORIES)
+
+
+def test_include_override_allows_one_category_with_wider_radius_but_keeps_other_filters():
+    roseville = make("Critter Co", "95678", 4.8, 75, category="wildlife_removal", primary_type="service")
+    bug_guy = make("Bug Guy", "95814", 4.9, 500, category="wildlife_removal", primary_type="service")
+    thin = make("Thin Critters", "95814", 5.0, 2, category="wildlife_removal", primary_type="service")
+    same_co_as_pest = make("Critter Co", "95678", 4.8, 75, category="pest_control", primary_type="plumber")
+    include = {"action": "include", "category": "wildlife_removal", "reason": "verified", "max_anchor_miles": 20}
+    overrides = {roseville.place_id: [include], thin.place_id: [include], same_co_as_pest.place_id: [include]}
+    selected, excluded = select([roseville, bug_guy, thin, same_co_as_pest], overrides)
+    assert [(p.name, p.category) for p in selected] == [("Critter Co", "wildlife_removal")]
+    reasons = {(p.name, p.category): r for p, r in excluded}
+    assert reasons[("Bug Guy", "wildlife_removal")] == "type service not allowed for wildlife_removal"
+    assert reasons[("Thin Critters", "wildlife_removal")].startswith("thin listing")  # review floor still applies
+    assert reasons[("Critter Co", "pest_control")] == "type plumber not allowed for pest_control"  # one category only
+    no_radius = {roseville.place_id: [{**include, "max_anchor_miles": 15}]}
+    assert select([roseville], no_radius)[0] == []  # 16 mi from Sacramento: out without the exception
+
+
+def test_wildlife_matches_from_every_anchor_city():
+    """Thin supply: the wider wildlife match radius reaches Creature Catchers (Roseville)."""
+    from providers.match import load_providers, match_providers
+
+    load_providers.cache_clear()
+    for zip_code in ["95616", "95695", "95691", "95814"]:
+        assert [p["name"] for p in match_providers("wildlife_removal", zip_code)] == [
+            "Creature Catchers Wildlife Management"
+        ]
 
 
 def test_coverage_flags_thin_cells(capsys):

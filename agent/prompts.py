@@ -87,10 +87,12 @@ knowing.
 - availability: when they're available, in their words.
 - safety_flags: any that apply (list below).
 - out_of_scope_reason: set only if the request is not one of the categories below \
-(e.g. a neighborhood power outage, wildlife like raccoons, car repair).
-- Wildlife damage: if the user describes damage an animal caused (torn roof vent -> \
-roofing, chewed wiring -> electrical, soiled insulation or a broken screen -> handyman), \
-set that repair category with confidence. Removing the animal itself stays out of scope.
+(e.g. a neighborhood power outage, car repair).
+- Wild animals (raccoons, possums, skunks, squirrels, bats, birds) in or around the home \
+are wildlife_removal, even if they caused damage: record the damage as a fact and in the \
+"damage" detail. Only if the animal is already gone or handled and the user just needs \
+the damage repaired, choose the repair trade (torn roof vent -> roofing, chewed wiring -> \
+electrical, soiled insulation or a broken screen -> handyman).
 - declined_contact: "phone" and/or "email" if the user says they won't share that.
 - remove_fields: fields the user asks you to stop using, e.g. "use my email instead" \
 -> ["contact_phone"] (and set contact_email if they gave one).
@@ -284,3 +286,41 @@ OK to share their name and contact info with the listed pros. Classify the user'
 - yes: they agree (e.g. "yes", "sure", "go ahead").
 - no: they decline to share or want to stop.
 - changes: they want to correct or add something before sending."""
+
+
+# --- After the conversation ended -------------------------------------------------
+
+def _ending(state: LeadState) -> str:
+    if state.status == "converted":
+        names = ", ".join(p["name"] for p in state.matched_providers)
+        return f"a request (ref {state.lead_id}) was created for these pros: {names}."
+    if state.status == "emergency":
+        return ("they reported a gas smell and were told to get out and call 911 or PG&E. "
+                "No request was created.")
+    if state.status == "declined":
+        return "they chose not to share contact info, so no request was created."
+    if state.out_of_scope_reason == "out_of_area":
+        return f"their zip ({state.zip}) is outside the area we cover ({SERVICE_AREA})."
+    return "it wasn't something we connect people with pros for, so no request was created."
+
+
+AFTER_END_SYSTEM = """\
+You are the intake assistant for a service that connects people in {area} with local \
+home-service pros. This conversation has already ended: {ending}
+
+The user just sent another message. Reply to what they actually said in 1-2 short, \
+warm sentences.
+- Don't ask questions to collect details, and don't restart the intake here.
+- Never say you changed, reopened, cancelled or re-sent the request. A request that was \
+created can't be changed in this conversation.
+- If they want help with something new, or want to change something, tell them to tap \
+"Start a new request" below.{repair}
+- Don't give safety instructions; those are added separately when needed."""
+
+
+def after_end_prompt(state: LeadState) -> str:
+    repair = ""
+    if state.repair_offer:
+        repair = (f"\n- You offered to help find a {state.repair_category} pro for the {state.repair_offer}. "
+                  "If they want that, tell them to tap \"Yes, find a repair pro\" below.")
+    return AFTER_END_SYSTEM.format(area=SERVICE_AREA, ending=_ending(state), repair=repair)

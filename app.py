@@ -4,23 +4,25 @@ Run:  streamlit run app.py
 """
 
 import hmac
+import os
 import re
+from contextlib import nullcontext
 from pathlib import Path
 
 import streamlit as st
+from langsmith import tracing_context
 
 from agent import config
 from agent.categories import CATEGORIES
 from agent.graph import build_graph, get_state, new_thread_id, stream_turn
 from agent.history import list_conversations, load_conversation
-from agent.nodes import PROVIDERS_HEADING, _text
+from agent.nodes import CLOSED_STATUSES, PROVIDERS_HEADING, REPAIR_WHO, _text
 from agent.state import LeadState
 from providers.match import match_providers
 
 SAMPLE_OPENERS = {
     "Basement flooding": "Water started coming into my basement last night after the storm. I don't know who to call.",
     "Sparking outlet": "One of the outlets in my kitchen sparked when I plugged in the toaster.",
-    "Raccoon in attic": "I think there's a raccoon living in my attic. I hear it every night.",
     "Something's wrong": "Something's wrong with my house and I'm not sure who to call.",
 }
 
@@ -34,6 +36,12 @@ ASSISTANT_AVATAR = "🏠"
 MORE_PROS_LIMIT = 8  # ranked matches to fetch for "See more pros" (top 3 still get the request)
 PAST_CONVERSATIONS_SHOWN = 10
 MAPS_URL = "https://www.google.com/maps/place/?q=place_id:{place_id}"
+DEMO_NOTICE = "Demo: requests are not actually sent to these businesses. Please use fake contact details."
+# Quick replies: tappable answers under the latest question, only where the
+# answers are fixed. Clicking sends the label as the user's message.
+URGENCY_REPLIES = ["Right away", "In a day or two", "This week", "Flexible"]
+CONSENT_REPLIES = ["Yes, share my info", "No thanks"]
+DETAIL_REPLIES = ["Not sure"]
 CATEGORY_ICONS = {
     "water_damage": "💧", "plumbing": "🚰", "electrical": "⚡", "hvac": "🌡️",
     "roofing": "🏠", "pest_control": "🐜", "appliance_repair": "🧺", "handyman": "🔧",
@@ -46,6 +54,8 @@ st.set_page_config(page_title="Home Services Assistant", page_icon="🏠", layou
 # (visitors' names and phone numbers stay in this server's memory only).
 DEPLOYED = config.get_flag("DEPLOYED")
 APP_PASSWORD = config.get_secret("APP_PASSWORD")
+if DEPLOYED:  # LangSmith tracing is for local debugging only: never send visitors' chats
+    os.environ["LANGSMITH_TRACING"] = os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
 
 def password_gate() -> None:
@@ -69,23 +79,41 @@ password_gate()
 
 
 @st.cache_resource
-def get_graph(deployed: bool):
-    """One graph (and one MemorySaver) for the whole server process.
-    Deployed: leads are validated and shown, but not written to disk."""
-    return build_graph(leads_dir=None) if deployed else build_graph()
+def shared_graph():
+    """Local: one graph (and one MemorySaver) for the whole server process."""
+    return build_graph()
 
 
-graph = get_graph(DEPLOYED)
+def get_graph():
+    """Deployed: each browser session gets its own graph and MemorySaver, kept in
+    st.session_state, so a visitor's conversation and lead live only in their
+    session and are gone when it ends. Nothing is written to disk (leads_dir=None,
+    no transcripts), and the final message says nothing was sent (demo=True)."""
+    if not DEPLOYED:
+        return shared_graph()
+    if "graph" not in st.session_state:
+        st.session_state.graph = build_graph(leads_dir=None, demo=True)
+    return st.session_state.graph
+
+
+graph = get_graph()
 TRANSCRIPTS_DIR = None if DEPLOYED else config.TRANSCRIPTS_DIR
 
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = new_thread_id()
 
 
-def start_new_conversation(opener: str | None = None) -> None:
+def start_new_conversation(opener: str | None = None, carry: dict | None = None) -> None:
+    """New thread. `carry`: zip/contact the user chose to reuse, set with their
+    first message so the agent doesn't ask for them again."""
     st.session_state.thread_id = new_thread_id()
     st.session_state.pending = opener
     st.session_state.viewing = None
+    st.session_state.carry = carry
+
+
+def send_quick_reply(text: str) -> None:
+    st.session_state.pending = text  # sent on this rerun, same path as typed text
 
 
 def view_past(thread_id: str | None) -> None:
@@ -213,6 +241,67 @@ def render_assistant_message(text: str, providers: list[dict] | None) -> None:
     st.markdown(question)
 
 
+def quick_replies(s: LeadState) -> list[str]:
+    """Answers to offer for the latest assistant message. Clarify questions are
+    free-form (the LLM words a question from the category rule), so they get none."""
+    if s.status == "awaiting_confirm":
+        return CONSENT_REPLIES
+    if s.status != "in_progress":
+        return []
+    route = s.last_route or ""
+    if route == "ask_next:urgency":
+        return URGENCY_REPLIES
+    if route.startswith("ask_next:detail:"):
+        return DETAIL_REPLIES
+    return []
+
+
+def render_quick_replies(s: LeadState) -> None:
+    """A wrapping row of buttons (stacks onto new lines on narrow phone screens).
+    Keys include the turn so a stale row never fires twice."""
+    replies = quick_replies(s)
+    if not replies:
+        return
+    with st.container(horizontal=True, gap="small"):
+        for i, label in enumerate(replies):
+            st.button(label, key=f"qr-{st.session_state.thread_id}-{s.turn_count}-{i}",
+                      on_click=send_quick_reply, args=(label,), width="content")
+
+
+CARRY_FIELDS = ["zip", "name", "contact_phone", "contact_email"]
+
+
+def carry_fields(s: LeadState) -> dict:
+    """Zip and contact from an ended conversation (an out-of-area zip isn't reused)."""
+    carry = {f: getattr(s, f) for f in CARRY_FIELDS if getattr(s, f)}
+    if s.out_of_scope_reason == "out_of_area":
+        carry.pop("zip", None)
+    return carry
+
+
+def repair_opener(s: LeadState) -> str:
+    """First message of the follow-up repair request (wildlife lead with damage)."""
+    animal = str(s.category_details.get("animal") or "").strip()
+    who = f"the {animal}" if animal and animal.lower() != "unknown" else "the animal"
+    pro = REPAIR_WHO.get(s.repair_category, "someone")
+    return f"{who.capitalize()} is being handled, but I need {pro} to fix the {s.repair_offer} it caused."
+
+
+def render_next_steps(s: LeadState) -> None:
+    """After any ending: start a new request, reusing zip/contact only if the user
+    ticks the box. A wildlife lead with damage also gets a repair button. The
+    ended conversation (and its lead) is never touched."""
+    carry = carry_fields(s)
+    reuse = bool(carry) and st.checkbox("Reuse my zip code and contact info", key=f"reuse-{st.session_state.thread_id}")
+    chosen = carry if reuse else None
+    with st.container(horizontal=True, gap="small"):
+        if s.status == "converted" and s.repair_offer:
+            st.button("Yes, find a repair pro", key=f"repair-{st.session_state.thread_id}", type="primary",
+                      on_click=start_new_conversation, args=(repair_opener(s), chosen), width="content")
+        st.button("Start a new request", key=f"new-{st.session_state.thread_id}",
+                  on_click=start_new_conversation, args=(None, chosen), width="content")
+
+
 def stream_reply(text: str) -> None:
     """Show the user's message and stream the reply.
 
@@ -229,16 +318,21 @@ def stream_reply(text: str) -> None:
         thinking.markdown("_Thinking…_")
         streamed: list[str] = []
 
+        initial = st.session_state.pop("carry", None)  # only with a new request's first message
+
         def tokens():
             for token in stream_turn(
-                graph, st.session_state.thread_id, text, transcripts_dir=TRANSCRIPTS_DIR, source="app"
+                graph, st.session_state.thread_id, text, transcripts_dir=TRANSCRIPTS_DIR, source="app",
+                initial=initial,
             ):
                 if not streamed:
                     thinking.empty()
                 streamed.append(token)
                 yield token
 
-        st.write_stream(tokens())
+        # Deployed: tracing off even if LangSmith env vars were set by mistake.
+        with tracing_context(enabled=False) if DEPLOYED else nullcontext():
+            st.write_stream(tokens())
         if not "".join(streamed).strip():
             final = get_state(graph, st.session_state.thread_id).messages[-1]
             with thinking.container():
@@ -249,6 +343,8 @@ def stream_reply(text: str) -> None:
 chat_col, brain_col = st.columns([3, 2]) if show_brain else (st.container(), None)
 
 with chat_col:
+    if DEPLOYED:
+        st.info(DEMO_NOTICE, icon="🧪")
     if viewing:
         banner, back = st.columns([4, 1.4], vertical_alignment="center")
         banner.info("Viewing a past conversation (read-only)." if past_record else "That conversation couldn't be loaded.")
@@ -267,11 +363,16 @@ with chat_col:
         else:
             with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
                 render_assistant_message(text, state.matched_providers if i == last_confirm else None)
+    # Only under the latest message, and gone as soon as something is sent.
+    if history and history[-1][0] == "assistant" and not viewing and not message:
+        render_quick_replies(state)
     if state.status == "converted" and state.lead_id:
         if DEPLOYED:
             st.success(f"Lead `{state.lead_id}` created (demo: not saved or sent anywhere).")
         else:
             st.success(f"Lead created: `leads/{state.lead_id}.json`")
+    if state.status in CLOSED_STATUSES and history and not viewing and not message:
+        render_next_steps(state)
     if message:
         stream_reply(message)
 
@@ -289,8 +390,8 @@ def render_brain() -> None:
         st.caption(f"Category accepted after one clarify question: {state.category_locked}")
     if state.declined:
         st.markdown(f"**Declined to share:** {', '.join(state.declined)}")
-    if state.pivot_offered:
-        st.caption(f"Wildlife pivot offered (out-of-scope reason: {state.out_of_scope_reason})")
+    if state.repair_offer:
+        st.caption(f"Repair request offered after the lead: {state.repair_offer} ({state.repair_category})")
     if state.cause_unknown:
         st.caption("User doesn't know the cause: cause questions skipped")
     st.markdown(f"**Missing required:** {', '.join(state.missing_fields) or 'none'}")

@@ -1,16 +1,17 @@
 {
-  "lead_id": "1177c32b",
-  "created_at": "2026-10-08T21:31:15.958759Z",
+  "lead_id": "605b01d0",
+  "created_at": "2026-10-08T21:31:36.523522Z",
   "category": "wildlife_removal",
-  "problem_description": "The customer hears a raccoon in the attic every night, and it has torn up a vent on the roof.",
+  "problem_description": "The customer has a raccoon living in the attic, which they hear every night. They haven't noticed any damage.",
   "facts": [
-    "hears a raccoon in the attic every night",
-    "tore up a vent on the roof"
+    "Raccoon living in attic",
+    "Hears it every night",
+    "No damage noticed"
   ],
   "urgency": "within_week",
-  "zip": "95616",
-  "name": "Alex Kim",
-  "contact_phone": "(530) 555-0188",
+  "zip": "95618",
+  "name": "Dana Cruz",
+  "contact_phone": "(530) 555-0172",
   "contact_email": null,
   "address": null,
   "property_type": null,
@@ -19,7 +20,7 @@
   "category_details": {
     "animal": "raccoon",
     "location": "attic",
-    "damage": "tore up a vent on the roof"
+    "damage": "No damage noticed"
   },
   "safety_flags": [],
   "matched_providers": [
@@ -41,7 +42,7 @@
       "category": "wildlife_removal",
       "source_query": "wildlife removal in West Sacramento, CA",
       "fetched_at": "2026-10-08T20:56:11.519242Z",
-      "distance_miles": 28.1
+      "distance_miles": 28.4
     }
   ],
   "consent_to_share": true

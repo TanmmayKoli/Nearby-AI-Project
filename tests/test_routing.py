@@ -11,11 +11,9 @@ from agent.categories import (
     GAS_EMERGENCY_MESSAGE,
     OUT_OF_SCOPE,
     SAFETY_NOTICES,
-    WILDLIFE_PIVOT_DECLINED,
-    WILDLIFE_PIVOT_QUESTION,
 )
 from agent.faithfulness import unsupported_claims
-from agent.prompts import SUMMARIZE_SYSTEM, URGENCY_GUIDE, ask_system_prompt
+from agent.prompts import SUMMARIZE_SYSTEM, URGENCY_GUIDE, after_end_prompt, ask_system_prompt
 from agent.safety import detect_hazards
 from agent.state import LeadState
 from tests.test_graph import PROVIDER, FakeLLM, make_graph, turn
@@ -45,11 +43,15 @@ def test_detect_hazards(text, expected):
 
 
 def test_gas_skips_llm_and_ends(tmp_path):
-    graph, tid = make_graph(FakeLLM(), tmp_path)  # no scripted outputs: any LLM call would fail
+    llm = FakeLLM()  # no scripted outputs: any LLM call would fail
+    graph, tid = make_graph(llm, tmp_path)
     s = turn(graph, tid, "I smell gas near the water heater", tmp_path)
     assert s.status == "emergency" and s.messages[-1].content == GAS_EMERGENCY_MESSAGE
     assert "1-800-743-5000" in s.messages[-1].content and s.lead_id is None
-    assert "wrapped up" in turn(graph, tid, "ok what now", tmp_path).messages[-1].content
+    # After the end: the safety instruction is repeated first (by code), then the reply.
+    llm.texts.append("Once PG&E says it's safe, tap Start a new request and I'll find you a plumber.")
+    reply = turn(graph, tid, "ok what now", tmp_path).messages[-1].content
+    assert reply.startswith(nodes.GAS_REMINDER) and reply.endswith("I'll find you a plumber.")
 
 
 def test_gas_caught_by_extractor_when_keywords_miss(tmp_path):
@@ -124,7 +126,9 @@ def test_out_of_scope_redirects_and_ends(tmp_path, reason):
     s = turn(graph, tid, "there's a raccoon in my attic", tmp_path)
     assert s.status == "out_of_scope" and s.out_of_scope_reason == reason
     assert s.messages[-1].content == OUT_OF_SCOPE[reason] and s.lead_id is None
-    assert "wrapped up" in turn(graph, tid, "hello?", tmp_path).messages[-1].content
+    llm.texts.append("Hi! If there's something at home I can help with, tap Start a new request.")
+    s = turn(graph, tid, "hello?", tmp_path)
+    assert s.messages[-1].content.startswith("Hi!") and s.status == "out_of_scope"
 
 
 # --- contact edge cases ---------------------------------------------------------------
@@ -236,47 +240,127 @@ def test_ask_prompts_for_new_targets():
 
 # --- Phase 4 review fixes ----------------------------------------------------------
 
-RACCOON = {"category": "pest_control", "category_confidence": 0.6, "new_facts": ["Raccoon living in the attic"],
-           "out_of_scope_reason": "wildlife_removal"}
+WILDLIFE_PRO = {**PROVIDER, "name": "Critter Co", "category": "wildlife_removal"}
+RACCOON = {"category": "wildlife_removal", "category_confidence": 0.95, "urgency": "within_week",
+           "new_facts": ["Raccoon living in the attic", "It tore up a vent on the roof"],
+           "category_details": {"animal": "raccoon", "location": "attic", "damage": "torn roof vent"},
+           "zip": "95616", "name": "Alex Kim", "contact_phone": "5305550188"}
 
 
-def test_wildlife_pivot_offers_damage_question_once(tmp_path):
-    graph, tid = make_graph(FakeLLM(extractions=[RACCOON]), tmp_path)
-    s = turn(graph, tid, "there's a raccoon in my attic", tmp_path)
-    reply = s.messages[-1].content
-    assert OUT_OF_SCOPE["wildlife_removal"] in reply and reply.endswith(WILDLIFE_PIVOT_QUESTION)
-    assert s.pivot_offered and s.status == "in_progress" and s.last_route == "wildlife_pivot"
+def _raccoon_lead(tmp_path, extraction=RACCOON):
+    llm = FakeLLM(extractions=[extraction], texts=["A raccoon is living in the attic."], consents=["yes"])
+    graph, tid = make_graph(llm, tmp_path, matches=(WILDLIFE_PRO,))
+    turn(graph, tid, "there's a raccoon in my attic and it tore up a roof vent", tmp_path)
+    return llm, graph, tid, turn(graph, tid, "yes", tmp_path)
 
 
-def test_wildlife_pivot_with_damage_converts_as_roofing(tmp_path):
-    llm = FakeLLM(
-        extractions=[
-            RACCOON,
-            {"category": "roofing", "category_confidence": 0.9, "new_facts": ["Raccoon tore up a roof vent"],
-             "category_details": {"cause": "raccoon"}},
-            {"urgency": "within_week", "category_details": {"active_leak": "no"}},
-            {"zip": "95616"},
-            {"name": "Alex Kim", "contact_phone": "5305550188"},
-        ],
-        texts=["How soon do you need someone?", "What's your zip?", "Name and number?", "A raccoon tore up a roof vent."],
-        consents=["yes"],
-    )
+def test_raccoon_is_a_wildlife_lead_with_damage_as_a_fact_and_repair_offer(tmp_path):
+    _, _, _, s = _raccoon_lead(tmp_path)
+    assert s.status == "converted" and s.category == "wildlife_removal"
+    assert "It tore up a vent on the roof" in s.facts  # damage stays in THIS lead
+    assert (s.repair_offer, s.repair_category) == ("torn roof vent", "roofing")
+    assert s.messages[-1].content.endswith("Want help finding a roofer for the torn roof vent too?")
+
+
+@pytest.mark.parametrize("damage", ["none", "No damage noticed", "unknown", "not sure", "No, the vent looks fine"])
+def test_no_repair_offer_without_damage(tmp_path, damage):
+    details = {**RACCOON["category_details"], "damage": damage}
+    no_damage = {**RACCOON, "category_details": details, "new_facts": ["Raccoon living in the attic"]}
+    _, _, _, s = _raccoon_lead(tmp_path, no_damage)
+    assert s.status == "converted" and s.repair_offer is None and "too?" not in s.messages[-1].content
+
+
+@pytest.mark.parametrize(
+    "facts, details, expected",
+    [
+        (["It tore up a vent on the roof"], {}, ("roofing", "a roofer", "torn vent")),
+        ([], {"damage": "torn roof vent"}, ("roofing", "a roofer", "torn roof vent")),
+        ([], {"damage": "some shingles pulled off"}, ("roofing", "a roofer", "shingles")),
+        (["Raccoon chewed through the wires in the attic"], {}, ("electrical", "an electrician", "chewed wires")),
+        ([], {"damage": "chewed wiring"}, ("electrical", "an electrician", "chewed wiring")),
+        (["Squirrels chewed a cable"], {}, ("electrical", "an electrician", "chewed cable")),
+        ([], {"damage": "soiled insulation"}, ("handyman", "a handyman", "soiled insulation")),
+        (["There's a hole in the ceiling of the closet"], {}, ("handyman", "a handyman", "hole in the ceiling")),
+        ([], {"damage": "ceiling hole"}, ("handyman", "a handyman", "ceiling hole")),
+        ([], {"damage": "drywall is torn up"}, ("handyman", "a handyman", "drywall")),
+        # damage detail is checked before facts; first rule wins within a text
+        (["Wires chewed"], {"damage": "torn vent and chewed wiring"}, ("roofing", "a roofer", "torn vent")),
+        (["Raccoon in the attic at night"], {"damage": "none"}, None),
+        (["No damage to the vent or wiring"], {}, None),  # negated
+        ([], {"location": "attic", "animal": "raccoon"}, None),
+    ],
+)
+def test_repair_offer_mapping(facts, details, expected):
+    state = LeadState(category="wildlife_removal", facts=facts, category_details=details)
+    offer = nodes.repair_to_offer(state)
+    assert (offer and (offer.category, offer.who, offer.damage)) == expected
+
+
+def test_repair_offer_only_for_wildlife():
+    state = LeadState(category="roofing", category_details={"damage": "torn vent"})
+    assert nodes.repair_to_offer(state) is None
+
+
+def test_wildlife_damage_question_asked_even_after_detail_budget():
+    """The opener answered animal + location (the 2-question budget), but damage
+    decides the repair offer, so it's still asked, once."""
+    base = dict(category="wildlife_removal", category_confidence=0.95, facts=["Raccoon in attic"], urgency="within_week",
+                category_details={"animal": "raccoon", "location": "attic"})
+    assert nodes.next_target(LeadState(**base)) == "detail:damage"
+    assert nodes.next_target(LeadState(**base, asked=["detail:damage"])) == "zip"  # asked once, not repeated
+    answered = LeadState(**{**base, "category_details": {**base["category_details"], "damage": "none"}})
+    assert nodes.next_target(answered) == "zip"
+
+
+def test_after_end_never_changes_the_lead(tmp_path):
+    """No extraction runs after the end (none is scripted: it would fail), so a
+    'change my number' message can't touch the lead or state."""
+    llm, graph, tid, s = _raccoon_lead(tmp_path)
+    lead_before = (tmp_path / "leads" / f"{s.lead_id}.json").read_text()
+    llm.texts.append("That request is already sent. Tap Start a new request to use a different number.")
+    after = turn(graph, tid, "actually use 916-555-0100 instead", tmp_path)
+    assert after.contact_phone == s.contact_phone == "(530) 555-0188" and after.status == "converted"
+    assert (tmp_path / "leads" / f"{s.lead_id}.json").read_text() == lead_before
+    assert "find a roofing pro for the torn roof vent" in llm.prompts[-1]  # repair offer is in the prompt
+
+
+def test_after_end_llm_failure_apologizes_and_changes_nothing(tmp_path):
+    llm, graph, tid, s = _raccoon_lead(tmp_path)
+    llm.texts.append(TimeoutError("slow"))
+    after = turn(graph, tid, "thanks", tmp_path)
+    assert after.messages[-1].content == nodes.LLM_ERROR_REPLY and after.status == "converted"
+    assert after.lead_id == s.lead_id
+
+
+def test_after_end_prompt_describes_each_ending():
+    assert "was created for these pros: Critter Co" in after_end_prompt(
+        LeadState(status="converted", lead_id="abc", matched_providers=[WILDLIFE_PRO]))
+    assert "gas smell" in after_end_prompt(LeadState(status="emergency"))
+    assert "chose not to share contact" in after_end_prompt(LeadState(status="declined"))
+    assert "outside the area" in after_end_prompt(LeadState(status="out_of_scope", out_of_scope_reason="out_of_area", zip="90012"))
+    assert "Yes, find a repair pro" not in after_end_prompt(LeadState(status="declined"))
+
+
+def test_carried_zip_and_contact_are_not_asked_again(tmp_path):
+    from agent.graph import run_turn
+
+    llm = FakeLLM(extractions=[{"category": "roofing", "category_confidence": 0.9, "urgency": "within_week",
+                                "new_facts": ["Torn roof vent"], "category_details": {"active_leak": "no", "roof_type": "shingle"}}],
+                  texts=["Torn roof vent, no leak inside."])
     graph, tid = make_graph(llm, tmp_path)
-    turn(graph, tid, "there's a raccoon in my attic", tmp_path)
-    s = turn(graph, tid, "yeah, it tore up a vent on the roof", tmp_path)
-    assert s.category == "roofing" and s.status == "in_progress" and s.last_route == "ask_next:urgency"
-    for msg in ["this week, and no leak inside", "95616", "Alex Kim 530-555-0188"]:
-        s = turn(graph, tid, msg, tmp_path)
-    assert s.status == "awaiting_confirm"
-    s = turn(graph, tid, "yes", tmp_path)
-    assert s.status == "converted" and s.category == "roofing" and s.pivot_offered
+    s = run_turn(graph, tid, "I need the torn roof vent repaired", transcripts_dir=None,
+                 initial={"zip": "95616", "name": "Alex Kim", "contact_phone": "(530) 555-0188"})
+    assert s.zip == "95616" and s.name == "Alex Kim" and s.status == "awaiting_confirm"
+    assert "zip" not in s.asked and "contact" not in s.asked
 
 
-def test_wildlife_pivot_no_damage_ends_out_of_scope(tmp_path):
-    graph, tid = make_graph(FakeLLM(extractions=[RACCOON, {"new_facts": ["No damage noticed"]}]), tmp_path)
-    turn(graph, tid, "there's a raccoon in my attic", tmp_path)
-    s = turn(graph, tid, "no, nothing I've seen", tmp_path)
-    assert s.status == "out_of_scope" and s.messages[-1].content == WILDLIFE_PIVOT_DECLINED
+def test_animal_bite_gets_safety_notice_then_continues(tmp_path):
+    bite = {**RACCOON, "safety_flags": ["animal_contact"], "zip": None, "name": None, "contact_phone": None}
+    llm = FakeLLM(extractions=[bite], texts=["What's your zip code?"])
+    graph, tid = make_graph(llm, tmp_path, matches=(WILDLIFE_PRO,))
+    s = turn(graph, tid, "a raccoon scratched my son in the attic", tmp_path)
+    assert s.messages[-1].content.startswith(SAFETY_NOTICES["animal_contact"])
+    assert s.status == "in_progress" and s.last_route == "ask_next:zip"
 
 
 def test_cause_questions_skipped_when_user_unsure_but_symptoms_still_asked():
@@ -404,7 +488,8 @@ def test_out_of_region_zip_ends_immediately_without_asking_contact(tmp_path):
     assert s.status == "out_of_scope" and s.out_of_scope_reason == "out_of_area"
     assert s.messages[-1].content == OUT_OF_AREA_MESSAGE.format(zip="90012")
     assert "contact" not in s.asked and s.lead_id is None
-    assert "wrapped up" in turn(graph, tid, "oh ok", tmp_path).messages[-1].content
+    llm.texts.append("Sorry I couldn't help this time.")
+    assert turn(graph, tid, "oh ok", tmp_path).messages[-1].content == "Sorry I couldn't help this time."
 
 
 def test_nonexistent_zip_is_dropped_and_asked_again(tmp_path):
@@ -461,3 +546,63 @@ def test_plumbing_vs_water_damage_rule_is_wired_everywhere():
     for cat in ["plumbing", "water_damage"]:
         state = LeadState(category=cat, category_confidence=0.5)
         assert PLUMBING_VS_WATER_DAMAGE in clarify_instruction(state)
+
+
+# --- ongoing electrical hazards ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "text, ongoing",
+    [
+        ("The outlet keeps sparking every time something is plugged in", True),
+        ("it's still sparking", True),
+        ("it sparks whenever I plug in the vacuum", True),
+        ("it won't stop sparking", True),
+        ("there's smoke coming out of the outlet", True),
+        ("the cover plate feels warm", True),
+        ("the plug gets hot", True),
+        ("there are scorch marks on the outlet", True),
+        ("the outlet looks melted", True),
+        ("It sparked once, outlet isn't hot", False),
+        ("no smoke, just one spark", False),
+        ("one of the outlets sparked", False),
+        ("my smoke detector keeps beeping", False),
+        ("the hot water heater is leaking", False),
+        ("the outlet is not warm and there's no smoke", False),
+    ],
+)
+def test_ongoing_electrical_hazard_keywords(text, ongoing):
+    from agent.safety import ongoing_electrical_hazard
+
+    assert ongoing_electrical_hazard(text) is ongoing
+    assert ("ongoing_electrical" in detect_hazards(text)) is ongoing
+
+
+@pytest.mark.parametrize(
+    "message, extracted_urgency, expected",
+    [
+        ("The outlet keeps sparking every time something is plugged in", "within_48h", "emergency"),
+        ("The outlet keeps sparking every time something is plugged in", "within_week", "emergency"),
+        ("It sparked once, outlet isn't hot", "within_48h", "within_48h"),
+        ("no smoke, just one spark", "within_48h", "within_48h"),
+    ],
+)
+def test_ongoing_sparks_force_emergency_in_code(tmp_path, message, extracted_urgency, expected):
+    """Whatever the extractor says, an ongoing hazard is an emergency; a single spark isn't."""
+    llm = FakeLLM(extractions=[{**ELECTRICAL, "urgency": extracted_urgency}], texts=["Is it just that one outlet?"])
+    graph, tid = make_graph(llm, tmp_path)
+    s = turn(graph, tid, message, tmp_path)
+    assert s.urgency == expected
+
+
+def test_only_one_electrical_notice(tmp_path):
+    from agent.categories import SAFETY_NOTICES as NOTICES
+
+    llm = FakeLLM(extractions=[{**ELECTRICAL, "urgency": "emergency"}, {}],
+                  texts=["Is it just that one outlet?", "What's your zip?"])
+    graph, tid = make_graph(llm, tmp_path)
+    s = turn(graph, tid, "the outlet keeps sparking and the plate is hot", tmp_path)
+    assert s.messages[-1].content.count("Safety first") == 1
+    assert s.messages[-1].content.startswith(NOTICES["sparks_or_smoke"])
+    s = turn(graph, tid, "now there's smoke too", tmp_path)
+    assert "Safety first" not in s.messages[-1].content  # already warned

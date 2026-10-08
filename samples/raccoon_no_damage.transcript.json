@@ -1,6 +1,7 @@
 {
-  "thread_id": "4a7479f35417",
-  "saved_at": "2026-10-08T08:51:17.657076+00:00",
+  "thread_id": "fd52f1f0250c",
+  "source": "test",
+  "saved_at": "2026-10-08T21:31:36.527846+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,7 +9,15 @@
     },
     {
       "role": "assistant",
-      "content": "Sorry you're dealing with that. Animals like raccoons, possums, and skunks need a wildlife removal service. Most pest control companies don't handle them, so that's the best kind of company to search for.\n\nHas it caused any damage, like a torn roof vent, chewed wiring, or soiled insulation? We can help with repairs."
+      "content": "Sorry you're dealing with that, nightly noises in the attic are no fun. How soon are you hoping to get someone out: right away, in the next day or two, sometime this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "This week would be good."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, this week works. Have you noticed any damage, or any spots outside where it might be getting in?"
     },
     {
       "role": "user",
@@ -16,43 +25,98 @@
     },
     {
       "role": "assistant",
-      "content": "Got it. A wildlife removal service is the right call for the animal itself. If you find damage later, start a new conversation and I'll help you find someone for repairs."
+      "content": "Thanks, that's good to hear. What's your zip code so I can look for pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95618"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Davis is covered. What's your name and the best phone number for a pro to reach you? Email works too if you'd rather. It's just so the pro can contact you."
+    },
+    {
+      "role": "user",
+      "content": "Dana Cruz, 530-555-0172"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Wildlife removal** \u00b7 Within a week \u00b7 95618\n\nThe customer has a raccoon living in the attic, which they hear every night. They haven't noticed any damage.\n\nContact: Dana Cruz, (530) 555-0172\n\nPros near you:\n\n1. Creature Catchers Wildlife Management, Roseville \u00b7 4.8\u2605 (75 reviews) \u00b7 28.4 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref 605b01d0) is ready to go to Creature Catchers Wildlife Management. They'll have your number and the details above, so you won't need to explain it again."
     }
   ],
   "state": {
-    "category": null,
+    "category": "wildlife_removal",
     "facts": [
-      "Thinks a raccoon is living in the attic",
+      "Raccoon living in attic",
       "Hears it every night",
-      "Hasn't noticed any damage from the raccoon"
+      "No damage noticed"
     ],
-    "problem_description": null,
-    "urgency": null,
-    "zip": null,
-    "name": null,
-    "contact_phone": null,
+    "problem_description": "The customer has a raccoon living in the attic, which they hear every night. They haven't noticed any damage.",
+    "urgency": "within_week",
+    "zip": "95618",
+    "name": "Dana Cruz",
+    "contact_phone": "(530) 555-0172",
     "contact_email": null,
     "address": null,
     "property_type": null,
     "owner_or_renter": null,
     "availability": null,
-    "category_details": {},
+    "category_details": {
+      "animal": "raccoon",
+      "location": "attic",
+      "damage": "No damage noticed"
+    },
     "safety_flags": [],
-    "matched_providers": [],
-    "consent_to_share": false,
-    "out_of_scope_reason": "wildlife_removal",
+    "matched_providers": [
+      {
+        "place_id": "ChIJpZWuDtUEm4AR7pyWHrJQdkI",
+        "name": "Creature Catchers Wildlife Management",
+        "phone": "(530) 885-7378",
+        "address": "311 Vernon St, Roseville, CA 95678, USA",
+        "city": "Roseville",
+        "zip": "95678",
+        "lat": 38.7485205,
+        "lng": -121.28408569999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.8,
+        "review_count": 75,
+        "website": "https://creaturecatchers.org/",
+        "category": "wildlife_removal",
+        "source_query": "wildlife removal in West Sacramento, CA",
+        "fetched_at": "2026-10-08T20:56:11.519242Z",
+        "distance_miles": 28.4
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
     "declined": [],
     "cause_unknown": false,
-    "pivot_offered": true,
-    "category_confidence": 0.0,
+    "repair_offer": null,
+    "repair_category": null,
+    "category_confidence": 0.95,
     "missing_fields": [],
-    "turn_count": 2,
-    "status": "out_of_scope",
-    "last_route": "out_of_scope",
-    "asked": [],
+    "turn_count": 6,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "urgency",
+      "detail:damage",
+      "zip",
+      "contact"
+    ],
     "extraction_errors": [],
     "llm_errors": [],
-    "lead_id": null,
+    "lead_id": "605b01d0",
     "category_locked": null,
     "warned": [],
     "pending_notice": null

@@ -6,6 +6,8 @@ is plain Python: `entry_route`, `after_safety`, `route`, `next_target`.
 """
 
 import json
+from dataclasses import dataclass
+import re
 import logging
 import uuid
 from pathlib import Path
@@ -20,16 +22,15 @@ from pydantic import BaseModel, ValidationError
 from agent import prompts
 from agent.categories import (
     CATEGORIES,
+    EMERGENCY_SAFETY_FLAGS,
     GAS_EMERGENCY_MESSAGE,
     OUT_OF_AREA_MESSAGE,
     OUT_OF_SCOPE,
+    PGE_EMERGENCY_PHONE,
     SAFETY_NOTICES,
     URGENT_SAFETY_FLAGS,
-    WILDLIFE_PIVOT_CATEGORIES,
-    WILDLIFE_PIVOT_DECLINED,
-    WILDLIFE_PIVOT_QUESTION,
 )
-from agent.safety import detect_hazards, safety_notice
+from agent.safety import ELECTRICAL_NOTICE_ORDER, detect_hazards, safety_notice
 from providers.match import zip_service_status
 from agent.state import (
     ExtractedFields,
@@ -131,7 +132,7 @@ def after_llm_node(next_node: str) -> Callable[[LeadState], str]:
 
 def entry_route(state: LeadState) -> str:
     """Where a new user message goes. Plain code."""
-    return "closed" if state.status in CLOSED_STATUSES else "safety_check"
+    return "after_end" if state.status in CLOSED_STATUSES else "safety_check"
 
 
 def _last_user_text(state: LeadState) -> str:
@@ -290,6 +291,9 @@ def next_target(state: LeadState) -> str | None:
                 continue  # they already said they don't know; the pro will diagnose
             if q.key not in state.category_details and f"detail:{q.key}" not in state.asked:
                 return f"detail:{q.key}"
+    for q in spec.detail_questions:  # outside the budget (e.g. wildlife damage), still asked only once
+        if q.always_ask and q.key not in state.category_details and f"detail:{q.key}" not in state.asked:
+            return f"detail:{q.key}"
 
     if not state.zip:
         return "zip"
@@ -299,17 +303,13 @@ def next_target(state: LeadState) -> str | None:
 def route(state: LeadState) -> dict[str, Any]:
     """Deterministic: decide where this turn goes. No LLM.
 
-    Order: gas (extractor caught it) -> out of scope (wildlife: offer the damage
-    pivot once; continue only if the user described repairable damage) -> zip
-    outside the service area -> safety notices + urgency
+    Order: gas (extractor caught it) -> out of scope -> zip outside the service area -> safety notices + urgency
     floor -> lock category after one clarify -> mark dodged detail questions
     "unknown" -> next question, or match providers.
     """
     if "gas_smell" in state.safety_flags:
         return {"last_route": "emergency_response"}
-    if state.out_of_scope_reason and not _wildlife_damage_lead(state):
-        if state.out_of_scope_reason == "wildlife_removal" and not state.pivot_offered:
-            return {"last_route": "wildlife_pivot"}
+    if state.out_of_scope_reason:
         return {"last_route": "out_of_scope"}
 
     updates: dict[str, Any] = {}
@@ -324,22 +324,27 @@ def route(state: LeadState) -> dict[str, Any]:
         if zip_status == "unknown":
             updates["zip"] = None
 
-    # Sparks/burning: urgency is at least within_48h. A burning smell (ongoing
-    # hazard) is an emergency; for sparks, the extractor decides between a single
-    # spark that stopped (within_48h) and ongoing sparking/heat/scorching
-    # (emergency). Any unwarned hazard gets a notice either way.
+    # Electrical hazards: urgency is at least within_48h. An ONGOING hazard
+    # (burning smell, or keywords like "keeps sparking", smoke, a hot outlet,
+    # scorch marks: see safety.py) is forced to emergency in code, whatever the
+    # extractor said. A single spark that stopped stays within_48h. Any unwarned
+    # hazard gets a notice either way.
     hazards = set(state.safety_flags) & URGENT_SAFETY_FLAGS
-    if "burning_smell" in hazards and state.urgency != "emergency":
+    if hazards & EMERGENCY_SAFETY_FLAGS and state.urgency != "emergency":
         updates["urgency"] = "emergency"
     elif hazards and state.urgency not in ("emergency", "within_48h"):
         updates["urgency"] = "within_48h"
-    unwarned = [f for f in state.safety_flags if f in SAFETY_NOTICES and f not in state.warned]
-    if "sparks_or_smoke" in state.warned and "burning_smell" in unwarned:
-        unwarned.remove("burning_smell")  # the sparks notice already covers it
-        updates["warned"] = state.warned + ["burning_smell"]
+    warned = list(state.warned)
+    unwarned = [f for f in state.safety_flags if f in SAFETY_NOTICES and f not in warned]
+    if set(warned) & set(ELECTRICAL_NOTICE_ORDER):  # one electrical notice per conversation
+        covered = [f for f in unwarned if f in ELECTRICAL_NOTICE_ORDER]
+        unwarned = [f for f in unwarned if f not in covered]
+        warned += covered
     if unwarned:
         updates["pending_notice"] = safety_notice(unwarned)
-        updates["warned"] = state.warned + unwarned
+        warned += unwarned
+    if warned != state.warned:
+        updates["warned"] = warned
 
     # Never clarify twice: on a second ambiguous answer, go with the best guess.
     if state.category and not category_is_confident(state) and "clarify" in state.asked:
@@ -367,20 +372,11 @@ def route(state: LeadState) -> dict[str, Any]:
     return {**updates, "missing_fields": missing_required_fields(s), "last_route": decision}
 
 
-def _wildlife_damage_lead(state: LeadState) -> bool:
-    """After the wildlife pivot, did the user describe damage we can repair?"""
-    return (
-        state.out_of_scope_reason == "wildlife_removal"
-        and state.pivot_offered
-        and state.category in WILDLIFE_PIVOT_CATEGORIES
-    )
-
-
 def after_route(state: LeadState) -> str:
     decision = state.last_route or ""
     if decision.startswith("ask_next"):
         return "ask_next"
-    return decision  # emergency_response | out_of_scope | wildlife_pivot | clarify | no_contact | match_providers
+    return decision  # emergency_response | out_of_scope | clarify | no_contact | match_providers
 
 
 # --- asking ----------------------------------------------------------------------
@@ -413,26 +409,12 @@ def clarify(state: LeadState, llm: BaseChatModel) -> dict[str, Any]:
 
 
 def out_of_scope(state: LeadState) -> dict[str, Any]:
-    """Not a home service we cover: redirect and end. Excluded from conversion in evals.
-
-    If the wildlife pivot was already offered and the user had no damage (or the
-    answer was unclear), close politely instead of repeating the redirect.
-    """
+    """Not a home service we cover: redirect and end. Excluded from conversion in evals."""
     if state.out_of_scope_reason == "out_of_area":
         text = OUT_OF_AREA_MESSAGE.format(zip=state.zip)
-    elif state.pivot_offered:
-        text = WILDLIFE_PIVOT_DECLINED
     else:
         text = OUT_OF_SCOPE[state.out_of_scope_reason]
     return {**_reply(state, text), "status": "out_of_scope"}
-
-
-def wildlife_pivot(state: LeadState) -> dict[str, Any]:
-    """Wildlife: acknowledge, redirect, then ask ONE question about damage we can
-    repair. Next turn, route continues as a normal lead if they describe damage
-    (roofing / electrical / handyman), otherwise ends out_of_scope."""
-    text = f"Sorry you're dealing with that. {OUT_OF_SCOPE['wildlife_removal']}\n\n{WILDLIFE_PIVOT_QUESTION}"
-    return {**_reply(state, text), "pivot_offered": True}
 
 
 def _provider_phone_lines(providers: list[dict[str, Any]]) -> str:
@@ -569,7 +551,7 @@ def after_consent(state: LeadState) -> str:
 # --- create_lead + closed --------------------------------------------------------
 
 
-def create_lead(state: LeadState, leads_dir: Path | None) -> dict[str, Any]:
+def create_lead(state: LeadState, leads_dir: Path | None, demo: bool = False) -> dict[str, Any]:
     """Validate the Lead (schema enforces consent, contact, >=1 provider) and write it.
     leads_dir=None (deployed demo) validates but doesn't write to disk."""
     lead_id = uuid.uuid4().hex[:8]
@@ -596,26 +578,119 @@ def create_lead(state: LeadState, leads_dir: Path | None) -> dict[str, Any]:
         leads_dir.mkdir(parents=True, exist_ok=True)
         (leads_dir / f"{lead_id}.json").write_text(json.dumps(lead.model_dump(mode="json"), indent=2))
 
-    return {"lead_id": lead_id, "status": "converted", "messages": [AIMessage(final_message(state, lead_id))]}
+    repair = repair_to_offer(state)
+    return {
+        "lead_id": lead_id,
+        "status": "converted",
+        "repair_offer": repair.damage if repair else None,
+        "repair_category": repair.category if repair else None,
+        "messages": [AIMessage(final_message(state, lead_id, demo, repair))],
+    }
 
 
-def final_message(state: LeadState, lead_id: str) -> str:
+# --- repair offer after a wildlife lead ------------------------------------------
+# Plain code: keywords in what the user said -> the trade that repairs it. Rules
+# in order; within a rule, keyword patterns in priority order ("vent" before
+# "roof", so "torn roof vent" names the vent).
+
+@dataclass(frozen=True)
+class RepairOffer:
+    category: str  # roofing / electrical / handyman
+    who: str  # "a roofer"
+    damage: str  # "torn vent"
+
+
+REPAIR_TRADES: list[tuple[str, str, list[str]]] = [
+    ("roofing", "a roofer",
+     [r"vents?", r"shingles?", r"soffits?", r"fascia", r"gutters?", r"eaves", r"holes?\s+in\s+(?:the\s+)?roof", r"roof"]),
+    ("electrical", "an electrician", [r"wiring", r"wires?", r"cables?"]),
+    ("handyman", "a handyman",
+     [r"insulation", r"drywall", r"holes?\s+in\s+(?:the\s+)?(?:ceiling|wall)s?", r"ceiling\s+holes?", r"screens?"]),
+]
+REPAIR_WHO = {category: who for category, who, _ in REPAIR_TRADES}  # "roofing" -> "a roofer"
+_DAMAGE_WORD = re.compile(
+    r"\b(torn|tore|ripped|chewed|damaged|broken|broke|bent|pulled|loose|soiled|missing|wrecked)"
+    r"(?:\s+(?:up|off|out|through|apart|into))?(?:\s+(?:a|an|the|my|some|our|its))?\s+(?:(\w+)\s+)?$",
+    re.IGNORECASE,
+)
+_PARTICIPLE = {"tore": "torn", "broke": "broken"}
+
+
+def _damage_phrase(text: str, match: re.Match) -> str:
+    """'it tore up a vent on the roof' -> 'torn vent'; 'torn roof vent' -> 'torn roof vent'."""
+    noun = match.group(0).lower()
+    adj = _DAMAGE_WORD.search(text[: match.start()])
+    if not adj:
+        return noun
+    word = _PARTICIPLE.get(adj.group(1).lower(), adj.group(1).lower())
+    return " ".join(w for w in (word, (adj.group(2) or "").lower(), noun) if w)
+
+
+def repair_to_offer(state: LeadState) -> RepairOffer | None:
+    """Wildlife leads only. Scans the damage detail, the other details, then the
+    facts; the first trade keyword found (not negated) decides. No match -> no offer.
+    The damage stays a fact in THIS lead; the repair is a separate request."""
+    if state.category != "wildlife_removal":
+        return None
+    details = state.category_details
+    sources = [str(details.get("damage") or "")] + [str(v) for k, v in details.items() if k != "damage"] + state.facts
+    for text in sources:
+        for category, who, patterns in REPAIR_TRADES:
+            for pattern in patterns:
+                for m in re.finditer(rf"\b{pattern}\b", text, re.IGNORECASE):
+                    if not _NEGATION_BEFORE.search(text[max(0, m.start() - 25): m.start()]):
+                        return RepairOffer(category, who, _damage_phrase(text, m))
+    return None
+
+
+_NEGATION_BEFORE = re.compile(r"\b(no|not|don'?t|doesn'?t|didn'?t|never|without|isn'?t|aren'?t|haven'?t)\b[^.!?]*$", re.IGNORECASE)
+
+
+def final_message(state: LeadState, lead_id: str, demo: bool = False, repair: RepairOffer | None = None) -> str:
     """After consent. Emergencies also get provider phone numbers so the user
-    doesn't have to wait for a callback."""
+    doesn't have to wait for a callback. Demo (deployed): nothing is sent, so
+    say so plainly and always list the phone numbers. Wildlife with damage:
+    offer a repair request too."""
     names = ", ".join(p["name"] for p in state.matched_providers)
     period = "" if names.endswith(".") else "."  # "Woodland Electrical Inc." -> no ".."
-    message = (
-        f"You're all set. Your request (ref {lead_id}) is ready to go to {names}{period} "
-        f"They'll have your number and the details above, so you won't need to explain it again."
-    )
-    if state.urgency == "emergency":
-        message += f"\n\nIf you'd rather not wait, you can call any of them now:\n\n{_provider_phone_lines(state.matched_providers)}"
+    if demo:
+        message = (
+            f"You're all set (ref {lead_id}). This is a demo, so your request was not sent "
+            f"and {names} won't contact you. If you need help, you can call them directly:"
+            f"\n\n{_provider_phone_lines(state.matched_providers)}"
+        )
+    else:
+        message = (
+            f"You're all set. Your request (ref {lead_id}) is ready to go to {names}{period} "
+            f"They'll have your number and the details above, so you won't need to explain it again."
+        )
+        if state.urgency == "emergency":
+            message += f"\n\nIf you'd rather not wait, you can call any of them now:\n\n{_provider_phone_lines(state.matched_providers)}"
+    if repair:
+        message += f"\n\nWant help finding {repair.who} for the {repair.damage} too?"
     return message
 
 
-def closed(state: LeadState) -> dict[str, Any]:
-    return {
-        "messages": [
-            AIMessage("This request is wrapped up. Start a new conversation if there's something else I can help with.")
-        ]
-    }
+# --- after the conversation ended ----------------------------------------------------
+
+GAS_REMINDER = f"If you still smell gas, stay outside and call 911 or PG&E at {PGE_EMERGENCY_PHONE}."
+
+
+def after_end(state: LeadState, llm: BaseChatModel) -> dict[str, Any]:
+    """A message after any ending (converted, out_of_scope, declined, emergency).
+
+    A short reply to what they actually said. Only adds a message: the lead (and
+    everything else in state) is never reopened or changed. Anything new goes
+    through the app's "Start a new request" button. Gas: the safety instruction
+    comes first, from code, so it's always there.
+    """
+    try:
+        reply = llm.invoke([SystemMessage(prompts.after_end_prompt(state)), *state.messages])
+    except LLM_ERRORS as e:
+        return llm_failure(state, "after_end", e)
+    text = _text(reply).strip()
+    if not text:
+        return llm_failure(state, "after_end", ValueError(f"empty reply, content={reply.content!r:.200}"))
+    if state.status == "emergency":
+        text = f"{GAS_REMINDER}\n\n{text}"
+    return {"messages": [AIMessage(text)]}

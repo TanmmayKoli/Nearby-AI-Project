@@ -1,6 +1,7 @@
 {
-  "thread_id": "1925bf354ae5",
-  "saved_at": "2026-10-08T08:52:08.168373+00:00",
+  "thread_id": "244c352f1dc5",
+  "source": "test",
+  "saved_at": "2026-10-08T21:32:22.062292+00:00",
   "messages": [
     {
       "role": "user",
@@ -8,7 +9,15 @@
     },
     {
       "role": "assistant",
-      "content": "Sorry to hear that, a clogged kitchen sink is a hassle. What's your zip code so I can look for pros near you?"
+      "content": "Sorry about the clogged sink, that's a pain. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "Sometime this week."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, this week works. What's your zip code so I can find pros near you?"
     },
     {
       "role": "user",
@@ -16,7 +25,7 @@
     },
     {
       "role": "assistant",
-      "content": "Thanks, we've got Davis covered. What's your name and the best phone number to reach you (email works too)? That way a pro can contact you directly."
+      "content": "Thanks, we've got pros that serve Davis. What's your name and the best phone number to reach you (or an email if you'd prefer)? It's just so the pro can contact you."
     },
     {
       "role": "user",
@@ -24,7 +33,7 @@
     },
     {
       "role": "assistant",
-      "content": "Here's the request I'll send:\n\n**Plumbing** \u00b7 Within a week \u00b7 95616\n\nThe customer's kitchen sink drain is clogged, and water won't go down the sink.\n\nContact: Chris Park, chris.park@example.com\n\nPros near you:\n\n1. Advanced Plumbing, Heating and Air, Davis \u00b7 4.9\u2605 (381 reviews) \u00b7 2.4 mi\n2. Proficient Plumbing and Drain Davis, Davis \u00b7 5.0\u2605 (49 reviews) \u00b7 0.8 mi\n3. Hall's Plumbing, Woodland \u00b7 4.9\u2605 (701 reviews) \u00b7 8.7 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+      "content": "Here's the request I'll send:\n\n**Plumbing** \u00b7 Within a week \u00b7 95616\n\nThe customer's kitchen sink drain is clogged and water won't go down.\n\nContact: Chris Park, chris.park@example.com\n\nPros near you:\n\n1. Advanced Plumbing, Heating and Air, Davis \u00b7 4.9\u2605 (381 reviews) \u00b7 2.4 mi\n2. Proficient Plumbing and Drain Davis, Davis \u00b7 5.0\u2605 (49 reviews) \u00b7 0.8 mi\n3. Hall's Plumbing, Woodland \u00b7 4.9\u2605 (701 reviews) \u00b7 8.7 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
     },
     {
       "role": "user",
@@ -32,16 +41,15 @@
     },
     {
       "role": "assistant",
-      "content": "You're all set. Your request (ref 6d8c8fe5) is ready to go to Advanced Plumbing, Heating and Air, Proficient Plumbing and Drain Davis, Hall's Plumbing. They'll have your number and the details above, so you won't need to explain it again."
+      "content": "You're all set. Your request (ref 5a07dde3) is ready to go to Advanced Plumbing, Heating and Air, Proficient Plumbing and Drain Davis, Hall's Plumbing. They'll have your number and the details above, so you won't need to explain it again."
     }
   ],
   "state": {
     "category": "plumbing",
     "facts": [
-      "Kitchen sink drain is clogged",
-      "Water won't go down the kitchen sink"
+      "Kitchen sink drain is clogged and water won't go down"
     ],
-    "problem_description": "The customer's kitchen sink drain is clogged, and water won't go down the sink.",
+    "problem_description": "The customer's kitchen sink drain is clogged and water won't go down.",
     "urgency": "within_week",
     "zip": "95616",
     "name": "Chris Park",
@@ -52,7 +60,7 @@
     "owner_or_renter": null,
     "availability": null,
     "category_details": {
-      "fixture": "kitchen sink drain",
+      "fixture": "kitchen sink",
       "symptom": "clogged, water won't go down"
     },
     "safety_flags": [],
@@ -124,19 +132,21 @@
       "phone"
     ],
     "cause_unknown": false,
-    "pivot_offered": false,
+    "repair_offer": null,
+    "repair_category": null,
     "category_confidence": 0.95,
     "missing_fields": [],
-    "turn_count": 4,
+    "turn_count": 5,
     "status": "converted",
     "last_route": "consent:yes",
     "asked": [
+      "urgency",
       "zip",
       "contact"
     ],
     "extraction_errors": [],
     "llm_errors": [],
-    "lead_id": "6d8c8fe5",
+    "lead_id": "5a07dde3",
     "category_locked": null,
     "warned": [],
     "pending_notice": null

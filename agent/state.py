@@ -28,7 +28,7 @@ from agent.categories import CATEGORIES, CategoryKey, OutOfScopeReason, SafetyFl
 Urgency = Literal["emergency", "within_48h", "within_week", "flexible"]
 PropertyType = Literal["home", "business"]
 OwnerOrRenter = Literal["owner", "renter"]
-# out_of_scope: redirected (utility outage, wildlife, ...). Excluded from the
+# out_of_scope: redirected (utility outage, not a home service, out of area). Excluded from the
 # conversion-rate denominator in evals.
 # declined: the user said no to sharing contact info (at consent, or refused both
 # phone and email). Counts as a non-conversion, distinct from walking away.
@@ -164,9 +164,10 @@ class LeadState(BaseModel):
     out_of_scope_reason: OutOfScopeReason | Literal["out_of_area"] | None = None
     declined: list[ContactChannel] = Field(default_factory=list)  # contact methods the user refused
     cause_unknown: bool = False  # user said they don't know the cause: skip cause questions
-    # Wildlife pivot offered (redirect + "any damage?"). A pivoted conversation
-    # that converts counts as a normal conversion in evals.
-    pivot_offered: bool = False
+    # Wildlife lead with damage another trade repairs (torn vent, chewed wiring):
+    # offered as a separate request after this lead is created.
+    repair_offer: str | None = None  # the damage, e.g. "torn vent"
+    repair_category: str | None = None  # the trade that repairs it, e.g. "roofing"
 
     # Routing metadata
     category_confidence: float = 0.0

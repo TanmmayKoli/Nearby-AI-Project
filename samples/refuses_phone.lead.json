@@ -1,11 +1,10 @@
 {
-  "lead_id": "6d8c8fe5",
-  "created_at": "2026-10-08T08:52:08.165266Z",
+  "lead_id": "5a07dde3",
+  "created_at": "2026-10-08T21:32:22.056536Z",
   "category": "plumbing",
-  "problem_description": "The customer's kitchen sink drain is clogged, and water won't go down the sink.",
+  "problem_description": "The customer's kitchen sink drain is clogged and water won't go down.",
   "facts": [
-    "Kitchen sink drain is clogged",
-    "Water won't go down the kitchen sink"
+    "Kitchen sink drain is clogged and water won't go down"
   ],
   "urgency": "within_week",
   "zip": "95616",
@@ -17,7 +16,7 @@
   "owner_or_renter": null,
   "availability": null,
   "category_details": {
-    "fixture": "kitchen sink drain",
+    "fixture": "kitchen sink",
     "symptom": "clogged, water won't go down"
   },
   "safety_flags": [],

@@ -17,6 +17,7 @@ CategoryKey = Literal[
     "pest_control",
     "appliance_repair",
     "handyman",
+    "wildlife_removal",
 ]
 
 
@@ -26,11 +27,14 @@ class DetailQuestion:
 
     about_cause: the question asks what's CAUSING the problem. Skipped once the
     user has said they don't know the cause (the pro will diagnose it).
+    always_ask: asked even after the usual detail-question budget is used up
+    (wildlife damage: it decides whether we offer a separate repair request).
     """
 
     key: str
     question: str
     about_cause: bool = False
+    always_ask: bool = False
 
 
 @dataclass(frozen=True)
@@ -53,6 +57,12 @@ PLUMBING_VS_WATER_DAMAGE = (
     "flooring or walls, or flooding is water_damage. If both apply (an active leak AND "
     "standing water), choose water_damage when it's an emergency with standing water; "
     "otherwise plumbing."
+)
+
+# Same rule for pest_control and wildlife_removal (confusion_note for both).
+PEST_VS_WILDLIFE = (
+    "Pest control vs wildlife removal: insects, termites, rats and mice are pest_control. "
+    "Wild animals (raccoons, possums, skunks, squirrels, bats, birds) are wildlife_removal."
 )
 
 CATEGORIES: dict[str, CategorySpec] = {
@@ -143,7 +153,7 @@ CATEGORIES: dict[str, CategorySpec] = {
             ],
             emergency_triggers=["wasp or bee nest near an entry", "rodents in living areas with kids"],
             confused_with=["wildlife_removal"],
-            confusion_note="Raccoons, possums, skunks, etc. are wildlife removal, which most pest control companies don't handle.",
+            confusion_note=PEST_VS_WILDLIFE,
             search_queries=["pest control"],
         ),
         CategorySpec(
@@ -174,6 +184,27 @@ CATEGORIES: dict[str, CategorySpec] = {
             confusion_note="Anything beyond minor fixes in electrical or plumbing needs a licensed pro, not a handyman.",
             search_queries=["handyman"],
         ),
+        CategorySpec(
+            key="wildlife_removal",
+            label="Wildlife removal",
+            description=(
+                "Raccoons, possums, skunks, squirrels, bats or birds in the attic, crawlspace, "
+                "chimney or walls. Humane removal and sealing entry points."
+            ),
+            detail_questions=[
+                DetailQuestion("animal", "What kind of animal is it?"),
+                DetailQuestion("location", "Where is it: attic, crawlspace, chimney, or walls?"),
+                DetailQuestion("damage", "Have you noticed any damage or places where it's getting in?", always_ask=True),
+            ],
+            emergency_triggers=[
+                "an animal loose in the living space",
+                "a bat in a living area",
+                "a sick or aggressive animal",
+            ],
+            confused_with=["pest_control"],
+            confusion_note=PEST_VS_WILDLIFE,
+            search_queries=["wildlife removal", "animal removal"],
+        ),
     ]
 }
 
@@ -191,6 +222,8 @@ SafetyFlag = Literal[
     "water_near_electrical",
     "sewage",
     "active_flooding",
+    "animal_contact",
+    "ongoing_electrical",
 ]
 
 SAFETY_FLAG_DESCRIPTIONS: dict[str, str] = {
@@ -200,10 +233,15 @@ SAFETY_FLAG_DESCRIPTIONS: dict[str, str] = {
     "water_near_electrical": "Water in contact with or near outlets, panels, or wiring.",
     "sewage": "Sewage or black water present.",
     "active_flooding": "Water is still actively coming in.",
+    "animal_contact": "Someone was bitten or scratched by a wild animal, or touched or was near a bat.",
+    "ongoing_electrical": "An electrical hazard that's still happening: repeated sparking, smoke, a hot or warm "
+    "outlet/plug/cord, or scorch or melt marks. NOT a single spark that stopped.",
 }
 
 HARD_STOP_FLAGS: frozenset[str] = frozenset({"gas_smell"})
-URGENT_SAFETY_FLAGS: frozenset[str] = frozenset({"sparks_or_smoke", "burning_smell"})
+URGENT_SAFETY_FLAGS: frozenset[str] = frozenset({"sparks_or_smoke", "burning_smell", "ongoing_electrical"})
+# These force urgency = emergency in route, whatever the extractor said.
+EMERGENCY_SAFETY_FLAGS: frozenset[str] = frozenset({"burning_smell", "ongoing_electrical"})
 
 PGE_EMERGENCY_PHONE = "1-800-743-5000"
 
@@ -230,8 +268,17 @@ SAFETY_NOTICES: dict[str, str] = {
         "Safety first: stop using that outlet or appliance. If you can reach your breaker "
         "panel safely, switch off that circuit. If you see smoke or flames, get out and call 911."
     ),
+    "ongoing_electrical": (
+        "Safety first: stop using that outlet or appliance and don't touch it. If you can reach your "
+        "breaker panel safely, switch off that circuit. If you see flames or the smoke gets worse, "
+        "get out and call 911."
+    ),
     "water_near_electrical": (
         "Quick safety tip: stay out of any water that's near outlets, cords, or your electrical panel."
+    ),
+    "animal_contact": (
+        "Safety first: don't try to handle the animal. Because of the bite, scratch or bat contact, "
+        "please call a doctor or your county public health office today, before anything else."
     ),
 }
 
@@ -241,20 +288,7 @@ SAFETY_NOTICES: dict[str, str] = {
 # status "out_of_scope" and are EXCLUDED from the conversion-rate denominator
 # in evals (there was never a lead to win).
 
-OutOfScopeReason = Literal["utility_outage", "wildlife_removal", "other"]
-
-# Wildlife is out of scope, but the DAMAGE animals cause often isn't. After the
-# redirect we ask once about damage; if the user describes some, the
-# conversation continues as a normal lead in one of these categories.
-WILDLIFE_PIVOT_CATEGORIES: frozenset[str] = frozenset({"roofing", "electrical", "handyman"})
-WILDLIFE_PIVOT_QUESTION = (
-    "Has it caused any damage, like a torn roof vent, chewed wiring, or soiled insulation? "
-    "We can help with repairs."
-)
-WILDLIFE_PIVOT_DECLINED = (
-    "Got it. A wildlife removal service is the right call for the animal itself. If you "
-    "find damage later, start a new conversation and I'll help you find someone for repairs."
-)
+OutOfScopeReason = Literal["utility_outage", "other"]
 
 # Set by code (route), never by the extractor: the zip is real but outside the
 # region. Counted with out_of_scope in evals (we can't serve them).
@@ -269,14 +303,10 @@ OUT_OF_SCOPE: dict[str, str] = {
         "won't be able to fix it. Contact your utility: PG&E serves Davis, Woodland, and West "
         "Sacramento, and SMUD serves Sacramento. Both have outage maps and reporting on their websites."
     ),
-    "wildlife_removal": (
-        "Animals like raccoons, possums, and skunks need a wildlife removal service. Most pest "
-        "control companies don't handle them, so that's the best kind of company to search for."
-    ),
     "other": (
         "That's outside what I can help with. I connect people with local pros for water damage, "
-        "plumbing, electrical, heating and cooling, roofing, pest control, appliance repair, and "
-        "handyman work."
+        "plumbing, electrical, heating and cooling, roofing, pest control, appliance repair, "
+        "handyman work, and wildlife removal."
     ),
 }
 

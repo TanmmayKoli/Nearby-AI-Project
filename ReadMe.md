@@ -1,5 +1,7 @@
 # Home Services Lead Agent
 
+[![tests](https://github.com/TanmmayKoli/Nearby-AI-Project/actions/workflows/tests.yml/badge.svg)](https://github.com/TanmmayKoli/Nearby-AI-Project/actions/workflows/tests.yml)
+
 A conversational agent that turns "something's wrong with my house" into a **dispatchable lead** for a **real, local service provider** in the Davis–Sacramento area.
 
 The user describes their problem in plain language. The agent asks only the questions a provider actually needs, matches the user with real nearby businesses, and, with the user's consent, produces a structured lead a contractor could act on without reading the chat.

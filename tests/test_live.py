@@ -7,12 +7,13 @@
 
 No simulated LLM user and no judge: each scenario is a fixed script. The user
 answers whatever the agent asks, keyed on route's decision ("urgency",
-"detail:extent", "contact", "wildlife_pivot", ...); unscripted questions get
+"detail:extent", "contact", ...); unscripted questions get
 "I'm not sure." Optional `first_replies` are sent in order before the keyed
 answers (e.g. changing the problem mid-conversation).
 
-Each run prints every turn as it happens, then a summary table (also written
-to samples/scenario_results.md). All user details are fake (555-01XX numbers).
+Each run prints every turn as it happens (with per-node latency), then a
+summary table and a per-node latency table (also written to
+samples/scenario_results.md). All user details are fake (555-01XX numbers).
 """
 
 import json
@@ -23,10 +24,11 @@ from datetime import datetime
 
 import pytest
 
-from agent.config import AGENT_MODEL, ANTHROPIC_API_KEY, LEADS_DIR, PROJECT_ROOT
+from agent.config import AGENT_MODEL, ANTHROPIC_API_KEY, EXTRACT_MODEL, LEADS_DIR, PROJECT_ROOT
 from agent.faithfulness import unsupported_claims
 from agent.graph import build_graph, new_thread_id, run_turn
 from agent.nodes import _text
+from agent.timing import NodeTimer
 
 pytestmark = pytest.mark.skipif(
     not (os.getenv("RUN_LIVE") and ANTHROPIC_API_KEY), reason="set RUN_LIVE=1 and ANTHROPIC_API_KEY"
@@ -49,6 +51,7 @@ class Scenario:
     expected_urgency: str | None = None
     first_replies: list[str] = field(default_factory=list)  # sent in order before keyed answers
     never_asked: list[str] = field(default_factory=list)  # question types that must not be asked
+    expect_repair_offer: bool | None = None  # wildlife: offer a separate repair request after the lead?
 
 
 SCENARIOS = [
@@ -101,20 +104,29 @@ SCENARIOS = [
         "raccoon_roof_damage",
         "I think there's a raccoon living in my attic. I hear it every night.",
         {
-            "wildlife_pivot": "yeah, it tore up a vent on the roof",
             "urgency": "This week would be good.",
-            "detail:active_leak": "No, nothing is leaking inside.",
-            "detail:roof_type": "Asphalt shingles.",
+            "detail:animal": "A raccoon, I've seen it on the roof at night.",
+            "detail:location": "In the attic.",
+            "detail:damage": "Yeah, it tore up a vent on the roof.",
             "zip": "95616",
             "contact": "Alex Kim, 530-555-0188",
         },
-        expected_category="roofing",
+        expected_category="wildlife_removal",
+        expect_repair_offer=True,
     ),
     Scenario(
         "raccoon_no_damage",
         "I think there's a raccoon living in my attic. I hear it every night.",
-        {"wildlife_pivot": "No, I haven't noticed any damage."},
-        expected_status="out_of_scope",
+        {
+            "urgency": "This week would be good.",
+            "detail:animal": "A raccoon.",
+            "detail:location": "In the attic.",
+            "detail:damage": "No, I haven't noticed any damage.",
+            "zip": "95618",
+            "contact": "Dana Cruz, 530-555-0172",
+        },
+        expected_category="wildlife_removal",
+        expect_repair_offer=False,
     ),
     Scenario(
         "power_outage_street",
@@ -195,15 +207,21 @@ SCENARIOS = [
 ]
 
 RESULTS: list[dict] = []
+NODE_TIMES: dict[str, list[float]] = {}  # node -> every call's seconds, across all scenarios in this run
+LLM_NODES = ["extract", "ask_next", "clarify", "summarize", "consent_reply"]
 
 
-def timed_turn(graph, tid: str, n: int, text: str):
-    """Run one turn and print it immediately."""
+def timed_turn(graph, tid: str, n: int, text: str, node_times: dict[str, list[float]]):
+    """Run one turn, print it immediately, and add this turn's node latencies to node_times."""
     print(f"\n--- turn {n} ---\n[user] {text}", flush=True)
+    timer = NodeTimer()
     start = time.perf_counter()
-    state = run_turn(graph, tid, text, source="test")  # tagged so the app's history list ignores it
+    state = run_turn(graph, tid, text, source="test", callbacks=[timer])  # source: app history ignores it
     elapsed = time.perf_counter() - start
-    print(f"[route] {state.last_route}   ({elapsed:.1f}s)", flush=True)
+    for node, secs in timer.totals().items():
+        node_times.setdefault(node, []).extend(secs)
+    per_node = "  ".join(f"{node} {sum(secs):.1f}s" for node, secs in timer.totals().items() if sum(secs) >= 0.05)
+    print(f"[route] {state.last_route}   ({elapsed:.1f}s: {per_node or 'no LLM'})", flush=True)
     print(f"[agent] {_text(state.messages[-1])}", flush=True)
     return state, elapsed
 
@@ -223,16 +241,31 @@ def _mark(expected, actual) -> str:
 
 
 def results_table(results: list[dict]) -> str:
-    header = "| scenario | expected status | actual status | turns | category | urgency | faithful | seconds | notes |"
-    rows = [header, "|" + "---|" * 9]
+    header = ("| scenario | expected status | actual status | turns | category | urgency | faithful | seconds "
+              "| extract s | notes |")
+    rows = [header, "|" + "---|" * 10]
     for r in results:
         rows.append(
             f"| {r['name']} | {r['expected_status']} | {r['status']} {'✓' if r['status_ok'] else '✗'} | "
-            f"{r['turns']} | {r['category']} | {r['urgency']} | {r['faithful']} | {r['seconds']:.1f} | {r['notes']} |"
+            f"{r['turns']} | {r['category']} | {r['urgency']} | {r['faithful']} | {r['seconds']:.1f} | "
+            f"{r['extract_seconds']:.1f} | {r['notes']} |"
         )
     passed = sum(r["passed"] for r in results)
-    rows.append(f"\n**{passed}/{len(results)} scenarios passed** · model `{AGENT_MODEL}` · total "
-                f"{sum(r['seconds'] for r in results):.0f}s · {datetime.now():%Y-%m-%d %H:%M}")
+    rows.append(f"\n**{passed}/{len(results)} scenarios passed** · replies `{AGENT_MODEL}` · extract "
+                f"`{EXTRACT_MODEL}` · total {sum(r['seconds'] for r in results):.0f}s · {datetime.now():%Y-%m-%d %H:%M}")
+    return "\n".join(rows)
+
+
+def latency_table(node_times: dict[str, list[float]]) -> str:
+    """Per-node latency across every turn of every scenario in this run."""
+    rows = ["| node | model | calls | avg s | max s | total s |", "|---|---|---|---|---|---|"]
+    for node in LLM_NODES + sorted(set(node_times) - set(LLM_NODES)):
+        secs = node_times.get(node)
+        if not secs:
+            continue
+        model = EXTRACT_MODEL if node == "extract" else AGENT_MODEL if node in LLM_NODES else "(code)"
+        rows.append(f"| {node} | {model} | {len(secs)} | {sum(secs) / len(secs):.2f} | {max(secs):.2f} | "
+                    f"{sum(secs):.1f} |")
     return "\n".join(rows)
 
 
@@ -242,7 +275,7 @@ def summary():
     yield
     if not RESULTS:
         return
-    table = results_table(RESULTS)
+    table = results_table(RESULTS) + "\n\n## Latency per node\n\n" + latency_table(NODE_TIMES)
     print("\n\n========== SCENARIO SUMMARY ==========\n" + table)
     RESULTS_PATH.parent.mkdir(exist_ok=True)
     RESULTS_PATH.write_text("# Scenario results\n\nScripted runs of `tests/test_live.py`.\n\n" + table + "\n")
@@ -256,13 +289,14 @@ RUNS = [(sc, i) for sc in SCENARIOS for i in range(1, REPEAT + 1)]
 )
 def test_scenario(sc: Scenario, run: int):
     label = sc.name if REPEAT == 1 else f"{sc.name} (run {run}/{REPEAT})"
-    print(f"\n========== {label} (model={AGENT_MODEL}) ==========", flush=True)
+    print(f"\n========== {label} (replies={AGENT_MODEL}, extract={EXTRACT_MODEL}) ==========", flush=True)
     graph = build_graph()
     tid = new_thread_id()
     timings = []
+    node_times: dict[str, list[float]] = {}
     scripted = list(sc.first_replies)
 
-    state, t = timed_turn(graph, tid, 1, sc.opener)
+    state, t = timed_turn(graph, tid, 1, sc.opener, node_times)
     timings.append(t)
     while state.status in ("in_progress", "awaiting_confirm") and len(timings) < MAX_TURNS:
         if (state.last_route or "").startswith("llm_error"):
@@ -273,7 +307,7 @@ def test_scenario(sc: Scenario, run: int):
             reply = scripted.pop(0)
         else:
             reply = sc.answers.get(state.last_route.removeprefix("ask_next:"), DEFAULT_ANSWER)
-        state, t = timed_turn(graph, tid, len(timings) + 1, reply)
+        state, t = timed_turn(graph, tid, len(timings) + 1, reply, node_times)
         timings.append(t)
 
     faithful_problems = []
@@ -297,6 +331,9 @@ def test_scenario(sc: Scenario, run: int):
     if state.out_of_scope_reason:
         notes.append(f"reason={state.out_of_scope_reason}")
 
+    repair_ok = sc.expect_repair_offer is None or bool(state.repair_offer) == sc.expect_repair_offer
+    if not repair_ok:
+        notes.append(f"repair_offer={state.repair_offer!r}")
     status_ok = state.status == sc.expected_status
     category_ok = sc.expected_category is None or state.category == sc.expected_category
     urgency_ok = sc.expected_urgency is None or state.urgency == sc.expected_urgency
@@ -310,10 +347,13 @@ def test_scenario(sc: Scenario, run: int):
         "urgency": _mark(sc.expected_urgency, state.urgency),
         "faithful": ("✓" if not faithful_problems else "✗") if state.lead_id else "—",
         "seconds": sum(timings),
+        "extract_seconds": sum(node_times.get("extract", [])),
         "notes": "; ".join(notes),
-        "passed": status_ok and category_ok and urgency_ok and not wrongly_asked and not faithful_problems,
+        "passed": status_ok and category_ok and urgency_ok and repair_ok and not wrongly_asked and not faithful_problems,
     }
     RESULTS.append(result)
+    for node, secs in node_times.items():
+        NODE_TIMES.setdefault(node, []).extend(secs)
 
     print(f"\n--- RESULT --- thread={tid} status={state.status} turns={len(timings)} total={sum(timings):.1f}s")
     print(f"category={state.category} urgency={state.urgency} asked={state.asked}")

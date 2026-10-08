@@ -1,6 +1,6 @@
 {
-  "lead_id": "921d68d8",
-  "created_at": "2026-10-08T08:53:19.853217Z",
+  "lead_id": "c8be17c6",
+  "created_at": "2026-10-08T21:33:31.363914Z",
   "category": "plumbing",
   "problem_description": "The customer's toilet won't stop running.",
   "facts": [
@@ -17,7 +17,7 @@
   "availability": null,
   "category_details": {
     "fixture": "toilet",
-    "symptom": "running constantly"
+    "symptom": "won't stop running"
   },
   "safety_flags": [],
   "matched_providers": [
