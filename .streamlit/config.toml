@@ -13,3 +13,8 @@ font = "Source Sans 3:https://fonts.googleapis.com/css2?family=Source+Sans+3:wgh
 
 [theme.sidebar]
 backgroundColor = "#F1EFE9"
+
+[client]
+# Hide Streamlit's page list: pages/stats.py is admin-only (password-gated) and
+# shouldn't be advertised. It's still reachable at /stats.
+showSidebarNavigation = false
