@@ -1,0 +1,165 @@
+{
+  "thread_id": "e9d0a6b5f196",
+  "saved_at": "2026-10-08T08:50:46.669672+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "The outlet in my bedroom keeps sparking every time something is plugged in."
+    },
+    {
+      "role": "assistant",
+      "content": "Safety first: stay away from it and don't touch the outlet or anything plugged in. If you can reach your breaker panel safely (not standing in water), switch off that circuit. If you see flames or the smoke gets worse, get out and call 911.\n\nThanks for flagging that. Is the sparking just that one bedroom outlet, or are you seeing it at other outlets or around the house too?"
+    },
+    {
+      "role": "user",
+      "content": "Just that one outlet."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, just the one outlet. Besides the sparking, have you noticed a burning smell, scorch marks, or heat coming from it?"
+    },
+    {
+      "role": "user",
+      "content": "It keeps sparking, and the cover plate feels warm."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's helpful to know. What's your zip code so I can look for pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95616"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's in our Davis area. What's your name, and the best phone number for a pro to reach you (email is fine if you'd rather)? If you're comfortable sharing your street address, the crew can head straight there, but that's totally optional."
+    },
+    {
+      "role": "user",
+      "content": "Maria Lopez, 530-555-0156"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Electrical** \u00b7 Emergency \u00b7 95616\n\nA bedroom outlet sparks every time something is plugged in, and its cover plate feels warm. The sparking is only at that one outlet.\n\nContact: Maria Lopez, (530) 555-0156\n\nPros near you:\n\n1. Current Solution Electrical, Davis \u00b7 5.0\u2605 (13 reviews) \u00b7 1.6 mi\n2. Wisterman Electric, Woodland \u00b7 5.0\u2605 (54 reviews) \u00b7 7.5 mi\n3. Woodland Electrical Inc., Woodland \u00b7 4.9\u2605 (220 reviews) \u00b7 9.2 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref eb30c8e6) is ready to go to Current Solution Electrical, Wisterman Electric, Woodland Electrical Inc. They'll have your number and the details above, so you won't need to explain it again.\n\nIf you'd rather not wait, you can call any of them now:\n\n- Current Solution Electrical: (530) 758-9476\n- Wisterman Electric: (530) 681-1483\n- Woodland Electrical Inc.: (530) 402-1182"
+    }
+  ],
+  "state": {
+    "category": "electrical",
+    "facts": [
+      "Bedroom outlet sparks every time something is plugged in",
+      "Sparking is only at that one bedroom outlet",
+      "Cover plate on the bedroom outlet feels warm"
+    ],
+    "problem_description": "A bedroom outlet sparks every time something is plugged in, and its cover plate feels warm. The sparking is only at that one outlet.",
+    "urgency": "emergency",
+    "zip": "95616",
+    "name": "Maria Lopez",
+    "contact_phone": "(530) 555-0156",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "scope": "just the one bedroom outlet",
+      "hazard_signs": "keeps sparking, cover plate feels warm"
+    },
+    "safety_flags": [
+      "sparks_or_smoke"
+    ],
+    "matched_providers": [
+      {
+        "place_id": "ChIJYesEyZ8phYARow-q66QT4Nk",
+        "name": "Current Solution Electrical",
+        "phone": "(530) 758-9476",
+        "address": "2321 Roualt St, Davis, CA 95618, USA",
+        "city": "Davis",
+        "zip": "95618",
+        "lat": 38.5660968,
+        "lng": -121.7174677,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 5.0,
+        "review_count": 13,
+        "website": "https://currentsolution530.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 1.6
+      },
+      {
+        "place_id": "ChIJOy-4fyhFL4ERsxb4iI20mhI",
+        "name": "Wisterman Electric",
+        "phone": "(530) 681-1483",
+        "address": "1371 Coolidge Pl, Woodland, CA 95776, USA",
+        "city": "Woodland",
+        "zip": "95776",
+        "lat": 38.6618254,
+        "lng": -121.7574267,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 5.0,
+        "review_count": 54,
+        "website": "http://www.wistermanelectric.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 7.5
+      },
+      {
+        "place_id": "ChIJX34t8mXRhIARm355zB5Y4ow",
+        "name": "Woodland Electrical Inc.",
+        "phone": "(530) 402-1182",
+        "address": "10 N East St Ste 106, Woodland, CA 95776, USA",
+        "city": "Woodland",
+        "zip": "95776",
+        "lat": 38.6851797,
+        "lng": -121.7648961,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 4.9,
+        "review_count": 220,
+        "website": "http://woodlandelectrical.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 9.2
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.95,
+    "missing_fields": [],
+    "turn_count": 6,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "detail:scope",
+      "detail:hazard_signs",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "eb30c8e6",
+    "category_locked": null,
+    "warned": [
+      "sparks_or_smoke"
+    ],
+    "pending_notice": null
+  }
+}

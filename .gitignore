@@ -1,0 +1,19 @@
+# Secrets
+.env
+.streamlit/secrets.toml
+
+# Local data (may contain real names / phone numbers)
+leads/
+transcripts/
+evals/results/
+*.sqlite
+
+# Python / tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.benchmarks/
+
+# OS
+.DS_Store

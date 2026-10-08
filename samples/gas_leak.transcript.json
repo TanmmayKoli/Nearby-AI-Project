@@ -1,0 +1,52 @@
+{
+  "thread_id": "b09572cf517a",
+  "saved_at": "2026-10-08T08:50:46.693281+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I smell gas in my kitchen near the stove."
+    },
+    {
+      "role": "assistant",
+      "content": "If you smell gas, please act now:\n\n1. Leave the house right away and get everyone out, pets too.\n2. Don't flip light switches, use appliances or phones inside, or light anything.\n3. Once you're outside and away from the house, call 911 or PG&E at 1-800-743-5000.\n\nI'll stop here so you can focus on getting safe. Once PG&E says it's safe, start a new conversation and I can help you find a pro for any repairs."
+    }
+  ],
+  "state": {
+    "category": null,
+    "facts": [],
+    "problem_description": null,
+    "urgency": null,
+    "zip": null,
+    "name": null,
+    "contact_phone": null,
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {},
+    "safety_flags": [
+      "gas_smell"
+    ],
+    "matched_providers": [],
+    "consent_to_share": false,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.0,
+    "missing_fields": [],
+    "turn_count": 0,
+    "status": "emergency",
+    "last_route": "emergency_response",
+    "asked": [],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": null,
+    "category_locked": null,
+    "warned": [
+      "gas_smell"
+    ],
+    "pending_notice": null
+  }
+}

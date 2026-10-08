@@ -1,0 +1,166 @@
+{
+  "thread_id": "1864006bf21c",
+  "saved_at": "2026-10-08T08:33:05.196533+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "One of the outlets in my kitchen sparked when I plugged in the toaster."
+    },
+    {
+      "role": "assistant",
+      "content": "Safety first: stay away from it and don't touch the outlet or anything plugged in. If you can reach your breaker panel safely (not standing in water), switch off that circuit. If you see flames or the smoke gets worse, get out and call 911.\n\nThanks for letting me know. Is the problem just with that one outlet, or have you noticed other outlets or rooms acting up too?"
+    },
+    {
+      "role": "user",
+      "content": "Just that one outlet, the rest of the kitchen works."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, just that one outlet. Besides the spark, have you noticed a burning smell or the outlet feeling hot or warm?"
+    },
+    {
+      "role": "user",
+      "content": "Just the one spark. The outlet isn't hot."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that helps. What's your zip code so I can find pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95618"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, we can help in Davis. What's your name and the best phone number for a pro to reach you? Email works too if you'd rather use that."
+    },
+    {
+      "role": "user",
+      "content": "Sam Lee, 916-555-0142"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Electrical** \u00b7 Within 48 hours \u00b7 95618\n\nThe customer's kitchen outlet sparked once when a toaster was plugged in, and the outlet isn't hot. The rest of the kitchen works, and only that outlet has the problem.\n\nContact: Sam Lee, (916) 555-0142\n\nPros near you:\n\n1. Current Solution Electrical, Davis \u00b7 5.0\u2605 (13 reviews) \u00b7 1.9 mi\n2. Wisterman Electric, Woodland \u00b7 5.0\u2605 (54 reviews) \u00b7 8.1 mi\n3. Woodland Electrical Inc., Woodland \u00b7 4.9\u2605 (220 reviews) \u00b7 9.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref 51a80e58) is ready to go to Current Solution Electrical, Wisterman Electric, Woodland Electrical Inc. They'll have your number and the details above, so you won't need to explain it again."
+    }
+  ],
+  "state": {
+    "category": "electrical",
+    "facts": [
+      "One of the outlets in the kitchen sparked when the toaster was plugged in",
+      "The rest of the kitchen works; only that one outlet has the problem",
+      "Only one spark happened",
+      "The outlet isn't hot"
+    ],
+    "problem_description": "The customer's kitchen outlet sparked once when a toaster was plugged in, and the outlet isn't hot. The rest of the kitchen works, and only that outlet has the problem.",
+    "urgency": "within_48h",
+    "zip": "95618",
+    "name": "Sam Lee",
+    "contact_phone": "(916) 555-0142",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "scope": "just that one outlet; rest of the kitchen works",
+      "hazard_signs": "just one spark; outlet isn't hot"
+    },
+    "safety_flags": [
+      "sparks_or_smoke"
+    ],
+    "matched_providers": [
+      {
+        "place_id": "ChIJYesEyZ8phYARow-q66QT4Nk",
+        "name": "Current Solution Electrical",
+        "phone": "(530) 758-9476",
+        "address": "2321 Roualt St, Davis, CA 95618, USA",
+        "city": "Davis",
+        "zip": "95618",
+        "lat": 38.5660968,
+        "lng": -121.7174677,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 5.0,
+        "review_count": 13,
+        "website": "https://currentsolution530.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 1.9
+      },
+      {
+        "place_id": "ChIJOy-4fyhFL4ERsxb4iI20mhI",
+        "name": "Wisterman Electric",
+        "phone": "(530) 681-1483",
+        "address": "1371 Coolidge Pl, Woodland, CA 95776, USA",
+        "city": "Woodland",
+        "zip": "95776",
+        "lat": 38.6618254,
+        "lng": -121.7574267,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 5.0,
+        "review_count": 54,
+        "website": "http://www.wistermanelectric.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 8.1
+      },
+      {
+        "place_id": "ChIJX34t8mXRhIARm355zB5Y4ow",
+        "name": "Woodland Electrical Inc.",
+        "phone": "(530) 402-1182",
+        "address": "10 N East St Ste 106, Woodland, CA 95776, USA",
+        "city": "Woodland",
+        "zip": "95776",
+        "lat": 38.6851797,
+        "lng": -121.7648961,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "electrician",
+        "rating": 4.9,
+        "review_count": 220,
+        "website": "http://woodlandelectrical.com/",
+        "category": "electrical",
+        "source_query": "electrician in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 9.8
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.95,
+    "missing_fields": [],
+    "turn_count": 6,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "detail:scope",
+      "detail:hazard_signs",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "51a80e58",
+    "category_locked": null,
+    "warned": [
+      "sparks_or_smoke"
+    ],
+    "pending_notice": null
+  }
+}

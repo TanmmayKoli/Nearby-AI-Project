@@ -1,0 +1,153 @@
+{
+  "thread_id": "afa7bea5b044",
+  "saved_at": "2026-10-08T08:49:56.330708+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Water started coming into my basement last night after the storm. I don't know who to call."
+    },
+    {
+      "role": "assistant",
+      "content": "I'm sorry you're dealing with that, and I can help get you connected with local pros. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "As soon as possible, it's still coming in."
+    },
+    {
+      "role": "assistant",
+      "content": "Understood, we'll treat this as urgent. What's your zip code so I can find pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95616"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks. What's your name and the best phone number for a pro to reach you (email works too if you'd rather)? If you're comfortable sharing your street address, that's optional, but it would let the crew head straight there."
+    },
+    {
+      "role": "user",
+      "content": "Jane Doe, 530-555-0123"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Water damage restoration** \u00b7 Emergency \u00b7 95616\n\nWater began coming into the customer's basement last night after the storm and is still coming in.\n\nContact: Jane Doe, (530) 555-0123\n\nPros near you:\n\n1. SERVPRO of Davis, Davis \u00b7 4.8\u2605 (21 reviews) \u00b7 2.4 mi\n2. West Coast Fire & Water, West Sacramento \u00b7 4.9\u2605 (224 reviews) \u00b7 10.5 mi\n3. Restoration Management Company, West Sacramento \u00b7 4.7\u2605 (44 reviews) \u00b7 8.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref e1bebe61) is ready to go to SERVPRO of Davis, West Coast Fire & Water, Restoration Management Company. They'll have your number and the details above, so you won't need to explain it again.\n\nIf you'd rather not wait, you can call any of them now:\n\n- SERVPRO of Davis: (530) 433-0032\n- West Coast Fire & Water: (916) 866-8185\n- Restoration Management Company: (800) 400-5058"
+    }
+  ],
+  "state": {
+    "category": "water_damage",
+    "facts": [
+      "Water started coming into the basement last night after the storm",
+      "Water is still coming into the basement"
+    ],
+    "problem_description": "Water began coming into the customer's basement last night after the storm and is still coming in.",
+    "urgency": "emergency",
+    "zip": "95616",
+    "name": "Jane Doe",
+    "contact_phone": "(530) 555-0123",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "source": "storm",
+      "still_active": "yes, still coming in"
+    },
+    "safety_flags": [
+      "active_flooding"
+    ],
+    "matched_providers": [
+      {
+        "place_id": "ChIJG-F1TbEphYARmX_szW_SekI",
+        "name": "SERVPRO of Davis",
+        "phone": "(530) 433-0032",
+        "address": "1260 Lake Blvd Ste 218, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.554282199999996,
+        "lng": -121.78694530000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "general_contractor",
+        "rating": 4.8,
+        "review_count": 21,
+        "website": "https://www.servpro.com/locations/ca/servpro-of-davis?utm_medium=organic&utm_source=gbp",
+        "category": "water_damage",
+        "source_query": "water damage restoration in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 2.4
+      },
+      {
+        "place_id": "ChIJxyIGPsjTmoARzJhbrjSHgHQ",
+        "name": "West Coast Fire & Water",
+        "phone": "(916) 866-8185",
+        "address": "2798 Industrial Blvd, West Sacramento, CA 95691, USA",
+        "city": "West Sacramento",
+        "zip": "95691",
+        "lat": 38.5685278,
+        "lng": -121.54749890000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.9,
+        "review_count": 224,
+        "website": "https://westcoastfireandwater.com/",
+        "category": "water_damage",
+        "source_query": "water damage restoration in Woodland, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 10.5
+      },
+      {
+        "place_id": "ChIJbX1UQHzUmoARWdrK0njd6E4",
+        "name": "Restoration Management Company",
+        "phone": "(800) 400-5058",
+        "address": "1804 Enterprise Blvd, West Sacramento, CA 95691, USA",
+        "city": "West Sacramento",
+        "zip": "95691",
+        "lat": 38.5655676,
+        "lng": -121.57948890000002,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.7,
+        "review_count": 44,
+        "website": "https://rmc.com/locations/sacramento-california-ca/",
+        "category": "water_damage",
+        "source_query": "water damage restoration in West Sacramento, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 8.8
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.85,
+    "missing_fields": [],
+    "turn_count": 5,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "urgency",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "e1bebe61",
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

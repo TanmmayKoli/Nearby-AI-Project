@@ -1,0 +1,50 @@
+{
+  "thread_id": "3d293dfd9428",
+  "saved_at": "2026-10-08T08:51:20.314028+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "The power is out on my whole street since this morning."
+    },
+    {
+      "role": "assistant",
+      "content": "That sounds like a utility outage rather than a problem in your home, so an electrician won't be able to fix it. Contact your utility: PG&E serves Davis, Woodland, and West Sacramento, and SMUD serves Sacramento. Both have outage maps and reporting on their websites."
+    }
+  ],
+  "state": {
+    "category": null,
+    "facts": [
+      "Power has been out on the whole street since this morning"
+    ],
+    "problem_description": null,
+    "urgency": null,
+    "zip": null,
+    "name": null,
+    "contact_phone": null,
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {},
+    "safety_flags": [],
+    "matched_providers": [],
+    "consent_to_share": false,
+    "out_of_scope_reason": "utility_outage",
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.0,
+    "missing_fields": [],
+    "turn_count": 1,
+    "status": "out_of_scope",
+    "last_route": "out_of_scope",
+    "asked": [],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": null,
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

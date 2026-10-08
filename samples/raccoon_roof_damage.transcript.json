@@ -1,0 +1,170 @@
+{
+  "thread_id": "55ebe6e0e21d",
+  "saved_at": "2026-10-08T08:51:11.597368+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I think there's a raccoon living in my attic. I hear it every night."
+    },
+    {
+      "role": "assistant",
+      "content": "Sorry you're dealing with that. Animals like raccoons, possums, and skunks need a wildlife removal service. Most pest control companies don't handle them, so that's the best kind of company to search for.\n\nHas it caused any damage, like a torn roof vent, chewed wiring, or soiled insulation? We can help with repairs."
+    },
+    {
+      "role": "user",
+      "content": "yeah, it tore up a vent on the roof"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that helps. A torn vent is something a roofer can look at. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "This week would be good."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, this week works. With the vent torn open, is any water getting into the house right now?"
+    },
+    {
+      "role": "user",
+      "content": "No, nothing is leaking inside."
+    },
+    {
+      "role": "assistant",
+      "content": "Good, that gives us some breathing room. What's your zip code, so I can look for pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95616"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's Davis, so we have pros nearby. What's your name, and the best phone number for a pro to reach you? Email works too if you'd rather use that."
+    },
+    {
+      "role": "user",
+      "content": "Alex Kim, 530-555-0188"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Roofing** \u00b7 Within a week \u00b7 95616\n\nThe customer thinks a raccoon is living in the attic and hears it every night; it tore up a vent on the roof. No water is leaking inside.\n\nContact: Alex Kim, (530) 555-0188\n\nPros near you:\n\n1. Powers Roof Service, Rocklin \u00b7 5.0\u2605 (257 reviews) \u00b7 13.4 mi\n2. Roof Solutions Inc, Vacaville \u00b7 4.9\u2605 (267 reviews) \u00b7 14.2 mi\n3. Lucas Roofing, Davis \u00b7 5.0\u2605 (15 reviews) \u00b7 1.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref 07557138) is ready to go to Powers Roof Service, Roof Solutions Inc, Lucas Roofing. They'll have your number and the details above, so you won't need to explain it again."
+    }
+  ],
+  "state": {
+    "category": "roofing",
+    "facts": [
+      "Thinks a raccoon is living in the attic",
+      "Hears it every night",
+      "Raccoon tore up a vent on the roof",
+      "No water is leaking inside"
+    ],
+    "problem_description": "The customer thinks a raccoon is living in the attic and hears it every night; it tore up a vent on the roof. No water is leaking inside.",
+    "urgency": "within_week",
+    "zip": "95616",
+    "name": "Alex Kim",
+    "contact_phone": "(530) 555-0188",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "cause": "raccoon",
+      "active_leak": "no"
+    },
+    "safety_flags": [],
+    "matched_providers": [
+      {
+        "place_id": "ChIJsQLxsuU8m4ARmvt6-6Upunk",
+        "name": "Powers Roof Service",
+        "phone": "(916) 316-2700",
+        "address": "2457 Pinnacles Dr, Rocklin, CA 95677, USA",
+        "city": "Rocklin",
+        "zip": "95677",
+        "lat": 38.5617825,
+        "lng": -121.4937261,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 5.0,
+        "review_count": 257,
+        "website": "http://www.powerstileroofrepair.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Sacramento, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 13.4
+      },
+      {
+        "place_id": "ChIJpVSJjMYhhYARU8R0hvj8dLQ",
+        "name": "Roof Solutions Inc",
+        "phone": "(707) 449-7663",
+        "address": "4599 Pace Ln, Vacaville, CA 95688, USA",
+        "city": "Vacaville",
+        "zip": "95688",
+        "lat": 38.4436268,
+        "lng": -121.96335260000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 4.9,
+        "review_count": 267,
+        "website": "https://roofsolutionsca.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 14.2
+      },
+      {
+        "place_id": "ChIJm_Kh3yoqhYARcjhyKClxT6Y",
+        "name": "Lucas Roofing",
+        "phone": "(530) 304-3665",
+        "address": "624 Eisenhower St, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.548618999999995,
+        "lng": -121.77522669999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 5.0,
+        "review_count": 15,
+        "website": "http://www.lucasroofingindavis.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 1.8
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": "wildlife_removal",
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": true,
+    "category_confidence": 0.85,
+    "missing_fields": [],
+    "turn_count": 7,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "urgency",
+      "detail:active_leak",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "07557138",
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

@@ -1,0 +1,10 @@
+# Runtime dependencies (Streamlit Community Cloud installs this file).
+# Test-only tools are in requirements-dev.txt.
+langgraph==1.2.14
+langchain-anthropic==1.7.5
+langchain-core==1.6.7
+pydantic==2.13.5
+python-dotenv==1.2.4
+httpx==0.28.1
+zipcodes==3.0.0
+streamlit==1.65.0

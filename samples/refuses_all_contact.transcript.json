@@ -1,0 +1,184 @@
+{
+  "thread_id": "b303279bca3e",
+  "saved_at": "2026-10-08T08:52:43.967419+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "My garbage disposal stopped working."
+    },
+    {
+      "role": "assistant",
+      "content": "Sorry about that, those are a hassle. Is it just the disposal itself that needs fixing, or is there also a lot of standing water that needs cleaning up?"
+    },
+    {
+      "role": "user",
+      "content": "I'm not sure."
+    },
+    {
+      "role": "assistant",
+      "content": "No worries, a pro can sort that out when they look at it. How soon do you need someone: right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "No rush."
+    },
+    {
+      "role": "assistant",
+      "content": "Sounds good, thanks. When you use that sink, is it leaking, clogged or backing up, or is no water coming out at all?"
+    },
+    {
+      "role": "user",
+      "content": "It just hums and doesn't spin."
+    },
+    {
+      "role": "assistant",
+      "content": "That hum without spinning is helpful to know. What's your zip code so I can find pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95616"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's Davis, so we've got pros nearby. What's your name, and the best phone number for a pro to reach you? Email is fine too if you'd rather."
+    },
+    {
+      "role": "user",
+      "content": "I'm Dana. I'd rather not give my phone number."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Dana, no problem on the phone number. Would you be comfortable sharing an email address instead, so a pro can reach you that way?"
+    },
+    {
+      "role": "user",
+      "content": "No, I don't want to share my email either."
+    },
+    {
+      "role": "assistant",
+      "content": "Totally understand, Dana. The catch is that a pro needs some way to reach you in order to take the job and set up a time. Would you be willing to share either a phone number or an email, whichever you're more comfortable with?"
+    },
+    {
+      "role": "user",
+      "content": "No thanks, I'll pass on that."
+    },
+    {
+      "role": "assistant",
+      "content": "Understood. I can't send a request without a way for the pro to reach you. You can still contact these pros directly:\n\n- Advanced Plumbing, Heating and Air: (707) 471-6135\n- Hall's Plumbing: (530) 443-5818\n- Proficient Plumbing and Drain Davis: (530) 303-0285"
+    }
+  ],
+  "state": {
+    "category": "plumbing",
+    "facts": [
+      "Garbage disposal stopped working",
+      "Garbage disposal hums but doesn't spin"
+    ],
+    "problem_description": null,
+    "urgency": "flexible",
+    "zip": "95616",
+    "name": "Dana",
+    "contact_phone": null,
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "fixture": "garbage disposal",
+      "symptom": "hums but doesn't spin"
+    },
+    "safety_flags": [],
+    "matched_providers": [
+      {
+        "place_id": "ChIJeeCtJu6YDGUR3pHDzIbyCEw",
+        "name": "Advanced Plumbing, Heating and Air",
+        "phone": "(707) 471-6135",
+        "address": "1260 Lake Blvd Ste 204, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.554282199999996,
+        "lng": -121.78694530000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "general_contractor",
+        "rating": 4.9,
+        "review_count": 381,
+        "website": "https://advancedphvac.com/area/davis-ca-ac-repair/?utm_source=google&utm_medium=organic&utm_campaign=gbp_davis-ca",
+        "category": "plumbing",
+        "source_query": "plumber in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 2.4
+      },
+      {
+        "place_id": "ChIJ9YSR60fRhIARj4nOoUq5NMY",
+        "name": "Hall's Plumbing",
+        "phone": "(530) 443-5818",
+        "address": "346 Main St, Woodland, CA 95695, USA",
+        "city": "Woodland",
+        "zip": "95695",
+        "lat": 38.6770991,
+        "lng": -121.7766199,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "plumber",
+        "rating": 4.9,
+        "review_count": 701,
+        "website": "https://www.hallsplumbing.net/",
+        "category": "plumbing",
+        "source_query": "plumber in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 8.7
+      },
+      {
+        "place_id": "ChIJFT80JhwphYARMEiROUchaXY",
+        "name": "Proficient Plumbing and Drain Davis",
+        "phone": "(530) 303-0285",
+        "address": "140 B St suite 6A, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.542482299999996,
+        "lng": -121.74381260000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "plumber",
+        "rating": 5.0,
+        "review_count": 49,
+        "website": "https://www.proficientplumbinganddrain.com/",
+        "category": "plumbing",
+        "source_query": "plumber in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 0.8
+      }
+    ],
+    "consent_to_share": false,
+    "out_of_scope_reason": null,
+    "declined": [
+      "phone",
+      "email"
+    ],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.6,
+    "missing_fields": [
+      "contact"
+    ],
+    "turn_count": 8,
+    "status": "declined",
+    "last_route": "no_contact",
+    "asked": [
+      "clarify",
+      "urgency",
+      "detail:symptom",
+      "zip",
+      "contact",
+      "contact_email",
+      "contact_required"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": null,
+    "category_locked": "plumbing",
+    "warned": [],
+    "pending_notice": null
+  }
+}

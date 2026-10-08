@@ -1,0 +1,132 @@
+{
+  "thread_id": "a01e882003f8",
+  "saved_at": "2026-10-08T08:53:19.856966+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "95618, my toilet won't stop running"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's a common one and something a local pro can help with. What's your name, and what's the best phone number for them to reach you (email works too if you'd rather)?"
+    },
+    {
+      "role": "user",
+      "content": "Taylor Nguyen, 530-555-0193"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Plumbing** \u00b7 Within a week \u00b7 95618\n\nThe customer's toilet won't stop running.\n\nContact: Taylor Nguyen, (530) 555-0193\n\nPros near you:\n\n1. Advanced Plumbing, Heating and Air, Davis \u00b7 4.9\u2605 (381 reviews) \u00b7 2.6 mi\n2. Proficient Plumbing and Drain Davis, Davis \u00b7 5.0\u2605 (49 reviews) \u00b7 0.2 mi\n3. Bullseye Leak Detection , Inc., West Sacramento \u00b7 4.9\u2605 (610 reviews) \u00b7 8.8 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref 921d68d8) is ready to go to Advanced Plumbing, Heating and Air, Proficient Plumbing and Drain Davis, Bullseye Leak Detection , Inc. They'll have your number and the details above, so you won't need to explain it again."
+    }
+  ],
+  "state": {
+    "category": "plumbing",
+    "facts": [
+      "toilet won't stop running"
+    ],
+    "problem_description": "The customer's toilet won't stop running.",
+    "urgency": "within_week",
+    "zip": "95618",
+    "name": "Taylor Nguyen",
+    "contact_phone": "(530) 555-0193",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "fixture": "toilet",
+      "symptom": "running constantly"
+    },
+    "safety_flags": [],
+    "matched_providers": [
+      {
+        "place_id": "ChIJeeCtJu6YDGUR3pHDzIbyCEw",
+        "name": "Advanced Plumbing, Heating and Air",
+        "phone": "(707) 471-6135",
+        "address": "1260 Lake Blvd Ste 204, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.554282199999996,
+        "lng": -121.78694530000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "general_contractor",
+        "rating": 4.9,
+        "review_count": 381,
+        "website": "https://advancedphvac.com/area/davis-ca-ac-repair/?utm_source=google&utm_medium=organic&utm_campaign=gbp_davis-ca",
+        "category": "plumbing",
+        "source_query": "plumber in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 2.6
+      },
+      {
+        "place_id": "ChIJFT80JhwphYARMEiROUchaXY",
+        "name": "Proficient Plumbing and Drain Davis",
+        "phone": "(530) 303-0285",
+        "address": "140 B St suite 6A, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.542482299999996,
+        "lng": -121.74381260000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "plumber",
+        "rating": 5.0,
+        "review_count": 49,
+        "website": "https://www.proficientplumbinganddrain.com/",
+        "category": "plumbing",
+        "source_query": "plumber in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 0.2
+      },
+      {
+        "place_id": "ChIJubqXg37UmoARrk7jSdftc2k",
+        "name": "Bullseye Leak Detection , Inc.",
+        "phone": "(916) 760-8944",
+        "address": "4015 Seaport Blvd, West Sacramento, CA 95691, USA",
+        "city": "West Sacramento",
+        "zip": "95691",
+        "lat": 38.563896299999996,
+        "lng": -121.5793487,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "plumber",
+        "rating": 4.9,
+        "review_count": 610,
+        "website": "https://www.bullseyeleak.com/",
+        "category": "plumbing",
+        "source_query": "plumber in West Sacramento, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 8.8
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.95,
+    "missing_fields": [],
+    "turn_count": 3,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "921d68d8",
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

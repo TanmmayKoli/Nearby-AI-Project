@@ -1,0 +1,90 @@
+{
+  "lead_id": "eb30c8e6",
+  "created_at": "2026-10-08T08:50:46.666291Z",
+  "category": "electrical",
+  "problem_description": "A bedroom outlet sparks every time something is plugged in, and its cover plate feels warm. The sparking is only at that one outlet.",
+  "facts": [
+    "Bedroom outlet sparks every time something is plugged in",
+    "Sparking is only at that one bedroom outlet",
+    "Cover plate on the bedroom outlet feels warm"
+  ],
+  "urgency": "emergency",
+  "zip": "95616",
+  "name": "Maria Lopez",
+  "contact_phone": "(530) 555-0156",
+  "contact_email": null,
+  "address": null,
+  "property_type": null,
+  "owner_or_renter": null,
+  "availability": null,
+  "category_details": {
+    "scope": "just the one bedroom outlet",
+    "hazard_signs": "keeps sparking, cover plate feels warm"
+  },
+  "safety_flags": [
+    "sparks_or_smoke"
+  ],
+  "matched_providers": [
+    {
+      "place_id": "ChIJYesEyZ8phYARow-q66QT4Nk",
+      "name": "Current Solution Electrical",
+      "phone": "(530) 758-9476",
+      "address": "2321 Roualt St, Davis, CA 95618, USA",
+      "city": "Davis",
+      "zip": "95618",
+      "lat": 38.5660968,
+      "lng": -121.7174677,
+      "location_source": "exact",
+      "business_status": "OPERATIONAL",
+      "primary_type": "electrician",
+      "rating": 5.0,
+      "review_count": 13,
+      "website": "https://currentsolution530.com/",
+      "category": "electrical",
+      "source_query": "electrician in Davis, CA",
+      "fetched_at": "2026-10-08T03:01:30.399381Z",
+      "distance_miles": 1.6
+    },
+    {
+      "place_id": "ChIJOy-4fyhFL4ERsxb4iI20mhI",
+      "name": "Wisterman Electric",
+      "phone": "(530) 681-1483",
+      "address": "1371 Coolidge Pl, Woodland, CA 95776, USA",
+      "city": "Woodland",
+      "zip": "95776",
+      "lat": 38.6618254,
+      "lng": -121.7574267,
+      "location_source": "exact",
+      "business_status": "OPERATIONAL",
+      "primary_type": "electrician",
+      "rating": 5.0,
+      "review_count": 54,
+      "website": "http://www.wistermanelectric.com/",
+      "category": "electrical",
+      "source_query": "electrician in Davis, CA",
+      "fetched_at": "2026-10-08T03:01:30.399381Z",
+      "distance_miles": 7.5
+    },
+    {
+      "place_id": "ChIJX34t8mXRhIARm355zB5Y4ow",
+      "name": "Woodland Electrical Inc.",
+      "phone": "(530) 402-1182",
+      "address": "10 N East St Ste 106, Woodland, CA 95776, USA",
+      "city": "Woodland",
+      "zip": "95776",
+      "lat": 38.6851797,
+      "lng": -121.7648961,
+      "location_source": "exact",
+      "business_status": "OPERATIONAL",
+      "primary_type": "electrician",
+      "rating": 4.9,
+      "review_count": 220,
+      "website": "http://woodlandelectrical.com/",
+      "category": "electrical",
+      "source_query": "electrician in Davis, CA",
+      "fetched_at": "2026-10-08T03:01:30.399381Z",
+      "distance_miles": 9.2
+    }
+  ],
+  "consent_to_share": true
+}

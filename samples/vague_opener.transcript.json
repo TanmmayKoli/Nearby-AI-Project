@@ -1,0 +1,171 @@
+{
+  "thread_id": "ce26a66a91d2",
+  "saved_at": "2026-10-08T08:51:52.431280+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Something's wrong with my house and I'm not sure who to call."
+    },
+    {
+      "role": "assistant",
+      "content": "No problem, that's what we're here to help sort out. Can you tell me what's going on at your home?"
+    },
+    {
+      "role": "user",
+      "content": "There's a brown water stain spreading on my ceiling, right under the upstairs bathroom."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that helps. Do you need someone to track down and fix the leak itself, or someone to clean up and dry out the damage to the ceiling? It's fine if you're not sure yet."
+    },
+    {
+      "role": "user",
+      "content": "There's no water on the floor, just the stain, so probably something leaking from the bathroom."
+    },
+    {
+      "role": "assistant",
+      "content": "That helps, thanks. How soon do you need someone to take a look: right away, in the next day or two, this week, or whenever works?"
+    },
+    {
+      "role": "user",
+      "content": "Within the next few days would be good."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, we'll aim for the next few days. What's your zip code so I can look for pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95691"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, that's West Sacramento. What's your name, and the best phone number for a pro to reach you? Email is fine too if you'd rather."
+    },
+    {
+      "role": "user",
+      "content": "Priya Shah, 916-555-0177"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Water damage restoration** \u00b7 Within a week \u00b7 95691\n\nThe customer has a brown water stain spreading on the ceiling directly beneath the upstairs bathroom, with no water on the floor. The customer thinks the stain is from a leak in the upstairs bathroom.\n\nContact: Priya Shah, (916) 555-0177\n\nPros near you:\n\n1. West Coast Fire & Water, West Sacramento \u00b7 4.9\u2605 (224 reviews) \u00b7 0.2 mi\n2. SERVPRO of North Sacramento, Sacramento \u00b7 5.0\u2605 (168 reviews) \u00b7 7.0 mi\n3. A-1 Pro Property Restoration, Sacramento \u00b7 5.0\u2605 (59 reviews) \u00b7 10.3 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref f50d1478) is ready to go to West Coast Fire & Water, SERVPRO of North Sacramento, A-1 Pro Property Restoration. They'll have your number and the details above, so you won't need to explain it again."
+    }
+  ],
+  "state": {
+    "category": "water_damage",
+    "facts": [
+      "brown water stain spreading on the ceiling",
+      "stain is right under the upstairs bathroom",
+      "no water on the floor, just the ceiling stain",
+      "user thinks something is leaking from the upstairs bathroom"
+    ],
+    "problem_description": "The customer has a brown water stain spreading on the ceiling directly beneath the upstairs bathroom, with no water on the floor. The customer thinks the stain is from a leak in the upstairs bathroom.",
+    "urgency": "within_week",
+    "zip": "95691",
+    "name": "Priya Shah",
+    "contact_phone": "(916) 555-0177",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "extent": "just a ceiling stain, no water on the floor",
+      "source": "probably a leak from the upstairs bathroom"
+    },
+    "safety_flags": [],
+    "matched_providers": [
+      {
+        "place_id": "ChIJxyIGPsjTmoARzJhbrjSHgHQ",
+        "name": "West Coast Fire & Water",
+        "phone": "(916) 866-8185",
+        "address": "2798 Industrial Blvd, West Sacramento, CA 95691, USA",
+        "city": "West Sacramento",
+        "zip": "95691",
+        "lat": 38.5685278,
+        "lng": -121.54749890000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "service",
+        "rating": 4.9,
+        "review_count": 224,
+        "website": "https://westcoastfireandwater.com/",
+        "category": "water_damage",
+        "source_query": "water damage restoration in Woodland, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 0.2
+      },
+      {
+        "place_id": "ChIJldiJhNg8m4ARSyJfen2Qk7g",
+        "name": "SERVPRO of North Sacramento",
+        "phone": "(916) 964-3159",
+        "address": "710 W Stadium Ln, Sacramento, CA 95834, USA",
+        "city": "Sacramento",
+        "zip": "95834",
+        "lat": 38.6505049,
+        "lng": -121.47752969999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "general_contractor",
+        "rating": 5.0,
+        "review_count": 168,
+        "website": "https://www.servpro.com/locations/ca/servpro-of-north-sacramento?utm_medium=organic&utm_source=gbp",
+        "category": "water_damage",
+        "source_query": "water damage restoration in Woodland, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 7.0
+      },
+      {
+        "place_id": "ChIJ3aVE5I4ZmSIR6gnhpzfJK5A",
+        "name": "A-1 Pro Property Restoration",
+        "phone": "(916) 906-3920",
+        "address": "3939 Thornhill Dr, Sacramento, CA 95826, USA",
+        "city": "Sacramento",
+        "zip": "95826",
+        "lat": 38.5427192,
+        "lng": -121.36443109999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "general_contractor",
+        "rating": 5.0,
+        "review_count": 59,
+        "website": "https://a1prodemo.com/",
+        "category": "water_damage",
+        "source_query": "water damage restoration in Sacramento, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 10.3
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.5,
+    "missing_fields": [],
+    "turn_count": 7,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "facts",
+      "clarify",
+      "urgency",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "f50d1478",
+    "category_locked": "water_damage",
+    "warned": [],
+    "pending_notice": null
+  }
+}

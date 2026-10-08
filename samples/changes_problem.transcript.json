@@ -1,0 +1,160 @@
+{
+  "thread_id": "ce378a30330d",
+  "saved_at": "2026-10-08T08:53:11.103785+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Water is dripping from my kitchen ceiling. I think a pipe is leaking."
+    },
+    {
+      "role": "assistant",
+      "content": "Sorry you're dealing with that. Do you mainly need someone to find and fix the leaking pipe, or to dry out and clean up water that's already pooled or soaked in?"
+    },
+    {
+      "role": "user",
+      "content": "Actually, I just checked and it's the roof. Rain is coming in through the roof above the kitchen."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks for checking, that helps. Do you know what caused the damage, like the storm, the age of the roof, or a fallen tree or branch?"
+    },
+    {
+      "role": "user",
+      "content": "I'm not sure."
+    },
+    {
+      "role": "assistant",
+      "content": "No problem, a roofer can help figure that out. What's your zip code so I can find pros near you?"
+    },
+    {
+      "role": "user",
+      "content": "95616"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, we have pros in Davis. What's your name and the best phone number for a roofer to reach you? Email works too if you'd rather. If you're comfortable sharing your address, the crew can head straight there, but that's totally optional."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 530-555-0164"
+    },
+    {
+      "role": "assistant",
+      "content": "Here's the request I'll send:\n\n**Roofing** \u00b7 Emergency \u00b7 95616\n\nThe customer has water dripping from the kitchen ceiling, with rain coming in through the roof above the kitchen.\n\nContact: Jordan Lee, (530) 555-0164\n\nPros near you:\n\n1. Lucas Roofing, Davis \u00b7 5.0\u2605 (15 reviews) \u00b7 1.8 mi\n2. Xclusive Roof Repair Davis, Davis \u00b7 4.9\u2605 (15 reviews) \u00b7 2.2 mi\n3. Scott Family Roof Repair, Woodland \u00b7 4.8\u2605 (23 reviews) \u00b7 8.0 mi\n\nIs it OK to share your name and contact info with these pros so they can reach you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, go ahead."
+    },
+    {
+      "role": "assistant",
+      "content": "You're all set. Your request (ref e8e3dee7) is ready to go to Lucas Roofing, Xclusive Roof Repair Davis, Scott Family Roof Repair. They'll have your number and the details above, so you won't need to explain it again.\n\nIf you'd rather not wait, you can call any of them now:\n\n- Lucas Roofing: (530) 304-3665\n- Xclusive Roof Repair Davis: (530) 444-6567\n- Scott Family Roof Repair: (530) 922-2567"
+    }
+  ],
+  "state": {
+    "category": "roofing",
+    "facts": [
+      "Water is dripping from the kitchen ceiling",
+      "Rain is coming in through the roof above the kitchen"
+    ],
+    "problem_description": "The customer has water dripping from the kitchen ceiling, with rain coming in through the roof above the kitchen.",
+    "urgency": "emergency",
+    "zip": "95616",
+    "name": "Jordan Lee",
+    "contact_phone": "(530) 555-0164",
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "active_leak": "yes, rain coming in above kitchen",
+      "cause": "unknown"
+    },
+    "safety_flags": [],
+    "matched_providers": [
+      {
+        "place_id": "ChIJm_Kh3yoqhYARcjhyKClxT6Y",
+        "name": "Lucas Roofing",
+        "phone": "(530) 304-3665",
+        "address": "624 Eisenhower St, Davis, CA 95616, USA",
+        "city": "Davis",
+        "zip": "95616",
+        "lat": 38.548618999999995,
+        "lng": -121.77522669999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 5.0,
+        "review_count": 15,
+        "website": "http://www.lucasroofingindavis.com/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 1.8
+      },
+      {
+        "place_id": "ChIJlyoXBekrhYARA_bntZAJo8Y",
+        "name": "Xclusive Roof Repair Davis",
+        "phone": "(530) 444-6567",
+        "address": "4120 Chiles Rd 3 Suite 3, Davis, CA 95618, USA",
+        "city": "Davis",
+        "zip": "95618",
+        "lat": 38.5503394,
+        "lng": -121.70135800000001,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 4.9,
+        "review_count": 15,
+        "website": "http://davisroofrepair.top/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Davis, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 2.2
+      },
+      {
+        "place_id": "ChIJub8W3JXRhIARiNuWS_dIbBk",
+        "name": "Scott Family Roof Repair",
+        "phone": "(530) 922-2567",
+        "address": "1120 Gum Ave Unit C Unit C, Woodland, CA 95695, USA",
+        "city": "Woodland",
+        "zip": "95695",
+        "lat": 38.6678929,
+        "lng": -121.76615999999999,
+        "location_source": "exact",
+        "business_status": "OPERATIONAL",
+        "primary_type": "roofing_contractor",
+        "rating": 4.8,
+        "review_count": 23,
+        "website": "http://scottfamilyroofrepair.cc/",
+        "category": "roofing",
+        "source_query": "roofing contractor in Woodland, CA",
+        "fetched_at": "2026-10-08T03:01:30.399381Z",
+        "distance_miles": 8.0
+      }
+    ],
+    "consent_to_share": true,
+    "out_of_scope_reason": null,
+    "declined": [],
+    "cause_unknown": true,
+    "pivot_offered": false,
+    "category_confidence": 0.9,
+    "missing_fields": [],
+    "turn_count": 6,
+    "status": "converted",
+    "last_route": "consent:yes",
+    "asked": [
+      "clarify",
+      "detail:cause",
+      "zip",
+      "contact"
+    ],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": "e8e3dee7",
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

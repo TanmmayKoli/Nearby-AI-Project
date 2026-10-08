@@ -1,0 +1,53 @@
+{
+  "thread_id": "a6562256d8df",
+  "saved_at": "2026-10-08T08:53:22.197294+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "My water heater is leaking. I'm in 90012."
+    },
+    {
+      "role": "assistant",
+      "content": "Sorry, we only cover the Davis\u2013Sacramento area right now (Davis, Woodland, West Sacramento and Sacramento), so I can't match you with a pro near 90012."
+    }
+  ],
+  "state": {
+    "category": "plumbing",
+    "facts": [
+      "Water heater is leaking"
+    ],
+    "problem_description": null,
+    "urgency": null,
+    "zip": "90012",
+    "name": null,
+    "contact_phone": null,
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {
+      "fixture": "water heater",
+      "symptom": "leaking"
+    },
+    "safety_flags": [],
+    "matched_providers": [],
+    "consent_to_share": false,
+    "out_of_scope_reason": "out_of_area",
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": false,
+    "category_confidence": 0.85,
+    "missing_fields": [],
+    "turn_count": 1,
+    "status": "out_of_scope",
+    "last_route": "out_of_scope",
+    "asked": [],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": null,
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}

@@ -1,0 +1,76 @@
+[
+  {
+    "place_id": "ChIJk9bkdAHRhIARRYjoG6VtUvk",
+    "name": "Sacramento Yolo Mosquito & Vector Control District",
+    "action": "exclude",
+    "categories": "all",
+    "reason": "government agency, not hireable"
+  },
+  {
+    "place_id": "ChIJvVjTAxrRhIARpd72W4a4zzU",
+    "name": "Cardinal Professional Products",
+    "action": "exclude",
+    "categories": "all",
+    "reason": "supply distributor"
+  },
+  {
+    "place_id": "ChIJedk5kXQphYAR-9UGvdWpF0Q",
+    "name": "Lawn Master Landscaping",
+    "action": "exclude",
+    "categories": "all",
+    "reason": "landscaper"
+  },
+  {
+    "place_id": "ChIJh1iQGXUphYAR7xDHJEw5TAQ",
+    "name": "MAK Design + Build Inc.",
+    "action": "exclude",
+    "categories": [
+      "roofing"
+    ],
+    "reason": "design-build firm"
+  },
+  {
+    "place_id": "ChIJPV2AFzLAPUkRBPydLUnafp0",
+    "name": "Billy & Sons Plumbing",
+    "action": "exclude",
+    "categories": [
+      "water_damage"
+    ],
+    "reason": "plumber, not restoration"
+  },
+  {
+    "place_id": "ChIJt4qN1ljVmoARB37Bn4zuPfw",
+    "name": "AMERICO HANDYMAN LLC",
+    "action": "exclude",
+    "categories": [
+      "electrical",
+      "plumbing"
+    ],
+    "reason": "handyman, not a licensed trade (kept under handyman)"
+  },
+  {
+    "place_id": "ChIJRdnfg-nVmoARJD_6MLz-4yw",
+    "name": "King KitchenAid Appliance repair Sacramento",
+    "action": "exclude",
+    "categories": "all",
+    "reason": "uses a brand name, likely lead-gen listing"
+  },
+  {
+    "place_id": "ChIJg3_fBI_RhIARnyoP5yuR608",
+    "name": "Skippy Cleaners",
+    "action": "exclude",
+    "categories": [
+      "water_damage"
+    ],
+    "reason": "not a restoration company"
+  },
+  {
+    "place_id": "ChIJ6RQnnMHQhIARfb9zCDNWZTc",
+    "name": "Hawley Construction and Remodel Inc.",
+    "action": "exclude",
+    "categories": [
+      "water_damage"
+    ],
+    "reason": "not a restoration company"
+  }
+]

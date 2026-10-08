@@ -1,0 +1,15 @@
+# Option B: "Navy & Warm Linen". Calm, trustworthy, a little homey.
+[theme]
+base = "light"
+primaryColor = "#1E3A8A"
+backgroundColor = "#FBFAF7"
+secondaryBackgroundColor = "#F1EFE9"
+textColor = "#1F2937"
+borderColor = "#E4E0D6"
+linkColor = "#1E3A8A"
+baseRadius = "0.6rem"
+# Google Fonts (SIL Open Font License); falls back to the system sans-serif offline.
+font = "Source Sans 3:https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap, sans-serif"
+
+[theme.sidebar]
+backgroundColor = "#F1EFE9"

@@ -1,0 +1,60 @@
+{
+  "thread_id": "4a7479f35417",
+  "saved_at": "2026-10-08T08:51:17.657076+00:00",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I think there's a raccoon living in my attic. I hear it every night."
+    },
+    {
+      "role": "assistant",
+      "content": "Sorry you're dealing with that. Animals like raccoons, possums, and skunks need a wildlife removal service. Most pest control companies don't handle them, so that's the best kind of company to search for.\n\nHas it caused any damage, like a torn roof vent, chewed wiring, or soiled insulation? We can help with repairs."
+    },
+    {
+      "role": "user",
+      "content": "No, I haven't noticed any damage."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it. A wildlife removal service is the right call for the animal itself. If you find damage later, start a new conversation and I'll help you find someone for repairs."
+    }
+  ],
+  "state": {
+    "category": null,
+    "facts": [
+      "Thinks a raccoon is living in the attic",
+      "Hears it every night",
+      "Hasn't noticed any damage from the raccoon"
+    ],
+    "problem_description": null,
+    "urgency": null,
+    "zip": null,
+    "name": null,
+    "contact_phone": null,
+    "contact_email": null,
+    "address": null,
+    "property_type": null,
+    "owner_or_renter": null,
+    "availability": null,
+    "category_details": {},
+    "safety_flags": [],
+    "matched_providers": [],
+    "consent_to_share": false,
+    "out_of_scope_reason": "wildlife_removal",
+    "declined": [],
+    "cause_unknown": false,
+    "pivot_offered": true,
+    "category_confidence": 0.0,
+    "missing_fields": [],
+    "turn_count": 2,
+    "status": "out_of_scope",
+    "last_route": "out_of_scope",
+    "asked": [],
+    "extraction_errors": [],
+    "llm_errors": [],
+    "lead_id": null,
+    "category_locked": null,
+    "warned": [],
+    "pending_notice": null
+  }
+}
